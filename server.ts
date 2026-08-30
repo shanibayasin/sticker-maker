@@ -4,7 +4,11 @@ import { createServer as createViteServer } from 'vite';
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT || 3000);
+
+  if (process.env.VERCEL) {
+    return;
+  }
 
   // JSON Body Parser for API requests
   app.use(express.json({ limit: '25mb' }));
