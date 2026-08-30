@@ -6,7 +6,8 @@ import {
   renderDieCutStickerBorder, 
   removeBackgroundLocally, 
   downloadCanvasAsPNG, 
-  downloadCanvasAsPrintPDF 
+  downloadCanvasAsPrintPDF,
+  copyCanvasToClipboard 
 } from '../../utils/canvasHelper';
 import { subscribeFontLoad, loadGoogleFont } from '../../utils/fontLoader';
 import { isUrduFontFamily, hasRtlCharacters } from '../../data/fontsData';
@@ -26,6 +27,7 @@ import {
   Menu, 
   X, 
   Check,
+  Copy,
   Scissors,
   Sparkles,
   Type,
@@ -87,6 +89,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const [showOrderModal, setShowOrderModal] = useState<boolean>(false);
   const [orderEmail, setOrderEmail] = useState<string>('');
   const [orderSubmitted, setOrderSubmitted] = useState<boolean>(false);
+  const [copyToast, setCopyToast] = useState<string | null>(null);
 
   // Multi-sticker Pack State
   const [stickerPack, setStickerPack] = useState<Array<{ id: string; name: string }>>([
@@ -102,6 +105,12 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (!copyToast) return;
+    const timer = window.setTimeout(() => setCopyToast(null), 2200);
+    return () => window.clearTimeout(timer);
+  }, [copyToast]);
 
   // Pre-load fonts for any active text elements
   useEffect(() => {
@@ -1124,10 +1133,28 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     }
   };
 
-  // Trigger Download / Export
-  const triggerExport = (format: 'png-transparent' | 'png-highres' | 'pdf-300dpi') => {
+  // Trigger Download / Copy / Export
+  const triggerExport = async (format: 'copy-clipboard' | 'png-transparent' | 'png-highres' | 'pdf-300dpi') => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    if (format === 'copy-clipboard') {
+      const copied = await copyCanvasToClipboard(canvas, 1);
+      if (copied) {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F43F5E', '#F59E0B', '#10B981', '#6366F1'],
+        });
+        setCopyToast('Copied! Paste it in WhatsApp');
+      } else {
+        setCopyToast('Clipboard copy not supported — downloading instead.');
+        await downloadCanvasAsPNG(canvas, `sticker-transparent-${Date.now()}.png`, 1);
+      }
+      setShowExportModal(false);
+      return;
+    }
 
     confetti({
       particleCount: 80,
@@ -1258,7 +1285,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           </button>
         </div>
 
-        {/* Right: Export & Order Printed Stickers */}
+        {/* Right: Copy Primary Action & Order Printed Stickers */}
         <div className="flex items-center gap-2">
           <button
             id="editor-order-prints-btn"
@@ -1270,12 +1297,21 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           </button>
 
           <button
-            id="editor-download-btn"
-            onClick={() => setShowExportModal(true)}
+            id="editor-copy-btn"
+            onClick={() => void triggerExport('copy-clipboard')}
             className="inline-flex items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs hover:shadow-md transition-all"
           >
-            <Download className="w-4 h-4" />
-            <span>Export Sticker</span>
+            <Copy className="w-4 h-4" />
+            <span>Copy Sticker</span>
+          </button>
+
+          <button
+            id="editor-download-btn"
+            onClick={() => setShowExportModal(true)}
+            className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-100 text-neutral-800 text-xs font-bold px-4 py-2 rounded-xl border border-neutral-200 shadow-xs hover:shadow-md transition-all"
+          >
+            <Download className="w-4 h-4 text-neutral-600" />
+            <span>Download</span>
           </button>
         </div>
       </header>
@@ -1649,10 +1685,30 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             </div>
 
             <div className="space-y-2.5">
+              {/* Primary action: Copy direct to chat */}
+              <button
+                id="copy-clipboard-btn"
+                onClick={() => void triggerExport('copy-clipboard')}
+                className="w-full p-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white border border-rose-500 text-left transition-all group flex items-center justify-between shadow-xs"
+              >
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-white">
+                      Copy to Clipboard
+                    </span>
+                    <span className="text-[10px] font-bold bg-white/20 text-white px-1.5 py-0.5 rounded">
+                      Paste in chat
+                    </span>
+                  </div>
+                  <p className="text-xs text-rose-50">Paste directly into WhatsApp, Messenger, and other apps</p>
+                </div>
+                <Copy className="w-4 h-4 text-white" />
+              </button>
+
               {/* Option 1: Transparent PNG */}
               <button
                 id="export-png-transparent-btn"
-                onClick={() => triggerExport('png-transparent')}
+                onClick={() => void triggerExport('png-transparent')}
                 className="w-full p-4 rounded-xl border border-neutral-200 hover:border-rose-400 hover:bg-rose-50/50 text-left transition-all group flex items-center justify-between"
               >
                 <div className="space-y-0.5">
@@ -1672,7 +1728,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
               {/* Option 2: High-Resolution 2X PNG */}
               <button
                 id="export-png-highres-btn"
-                onClick={() => triggerExport('png-highres')}
+                onClick={() => void triggerExport('png-highres')}
                 className="w-full p-4 rounded-xl border border-neutral-200 hover:border-rose-400 hover:bg-rose-50/50 text-left transition-all group flex items-center justify-between"
               >
                 <div className="space-y-0.5">
@@ -1692,7 +1748,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
               {/* Option 3: Print-Ready 300 DPI PDF */}
               <button
                 id="export-pdf-300dpi-btn"
-                onClick={() => triggerExport('pdf-300dpi')}
+                onClick={() => void triggerExport('pdf-300dpi')}
                 className="w-full p-4 rounded-xl border border-neutral-200 hover:border-rose-400 hover:bg-rose-50/50 text-left transition-all group flex items-center justify-between"
               >
                 <div className="space-y-0.5">
@@ -1714,6 +1770,12 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
               100% Free • No watermarks • No login required
             </div>
           </div>
+        </div>
+      )}
+
+      {copyToast && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] rounded-full bg-neutral-900 text-white text-xs font-semibold px-3.5 py-2 shadow-lg animate-in fade-in">
+          {copyToast}
         </div>
       )}
 

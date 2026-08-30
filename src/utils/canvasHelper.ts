@@ -175,31 +175,78 @@ export async function removeBackgroundLocally(
 }
 
 /**
+ * Conversion helper reusable for both download and clipboard copy actions
+ */
+export function canvasToPngBlob(
+  canvas: HTMLCanvasElement,
+  scaleMultiplier: number = 1
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    let targetCanvas = canvas;
+    if (scaleMultiplier > 1) {
+      const scaled = document.createElement('canvas');
+      scaled.width = canvas.width * scaleMultiplier;
+      scaled.height = canvas.height * scaleMultiplier;
+      const sCtx = scaled.getContext('2d');
+      if (sCtx) {
+        sCtx.imageSmoothingEnabled = true;
+        sCtx.imageSmoothingQuality = 'high';
+        sCtx.drawImage(canvas, 0, 0, scaled.width, scaled.height);
+        targetCanvas = scaled;
+      }
+    }
+
+    targetCanvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Could not render canvas as PNG.'));
+    }, 'image/png');
+  });
+}
+
+/**
+ * Copies a canvas-rendered PNG directly to the system clipboard.
+ */
+export async function copyCanvasToClipboard(
+  canvas: HTMLCanvasElement,
+  scaleMultiplier: number = 1
+): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !navigator.clipboard || !window.isSecureContext) {
+    return false;
+  }
+
+  if (typeof ClipboardItem === 'undefined') {
+    return false;
+  }
+
+  try {
+    const blob = await canvasToPngBlob(canvas, scaleMultiplier);
+    await navigator.clipboard.write([
+      new ClipboardItem({ 'image/png': blob })
+    ]);
+    return true;
+  } catch (error) {
+    console.warn('Clipboard image write failed:', error);
+    return false;
+  }
+}
+
+/**
  * Downloads a canvas as high-resolution transparent PNG
  */
-export function downloadCanvasAsPNG(
-  canvas: HTMLCanvasElement, 
+export async function downloadCanvasAsPNG(
+  canvas: HTMLCanvasElement,
   filename: string = 'custom-die-cut-sticker.png',
   scaleMultiplier: number = 1
 ) {
-  let targetCanvas = canvas;
-  if (scaleMultiplier > 1) {
-    const scaled = document.createElement('canvas');
-    scaled.width = canvas.width * scaleMultiplier;
-    scaled.height = canvas.height * scaleMultiplier;
-    const sCtx = scaled.getContext('2d');
-    if (sCtx) {
-      sCtx.imageSmoothingEnabled = true;
-      sCtx.imageSmoothingQuality = 'high';
-      sCtx.drawImage(canvas, 0, 0, scaled.width, scaled.height);
-      targetCanvas = scaled;
-    }
-  }
-
+  const blob = await canvasToPngBlob(canvas, scaleMultiplier);
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = filename;
-  link.href = targetCanvas.toDataURL('image/png');
+  link.href = url;
+  document.body.appendChild(link);
   link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
 /**
