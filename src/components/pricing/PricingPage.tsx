@@ -53,7 +53,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>AI Background Removal</span>
+                  <span>Instant Background Removal</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0" />

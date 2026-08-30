@@ -336,7 +336,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             <button
               onClick={onTriggerBgRemoval}
               className="flex items-center gap-1 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 px-2 py-1 rounded-lg text-xs font-semibold transition-colors"
-              title="Re-run AI Background Removal"
+              title="Re-run Background Removal"
             >
               <Sparkles className="w-3 h-3 text-rose-500" />
               <span>Cutout</span>

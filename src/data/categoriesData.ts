@@ -34,7 +34,7 @@ export const CATEGORIES_DATA: Record<StickerCategory, CategoryInfo> = {
       },
       {
         question: 'How do I make my pet into a funny sticker?',
-        answer: 'Upload a picture of your pet, hit "AI Background Remover" to isolate their face, choose an auto white border, and add a funny speech bubble or cartoon sunglasses.',
+        answer: 'Upload a picture of your pet, use the background remover to isolate their face, choose an auto white border, and add a funny speech bubble or cartoon sunglasses.',
       },
     ],
   },
@@ -122,7 +122,7 @@ export const CATEGORIES_DATA: Record<StickerCategory, CategoryInfo> = {
     metaTitle: 'WhatsApp Sticker Maker – Create Custom Stickers for WhatsApp Free',
     metaDescription: 'Design custom WhatsApp stickers online in seconds. Auto-crop, transparent 512x512 PNG/WebP exports, and pack generator. 100% free, no app download required.',
     h1: 'WhatsApp Sticker Maker — Create Custom Chat Stickers Online Free',
-    intro: 'Transform your favorite personal photos, funny memes, and expressive quotes into vibrant custom stickers ready for WhatsApp. Unlike clunky mobile apps loaded with intrusive ads and watermark restrictions, our web-based WhatsApp Sticker Maker gives you complete creative freedom on any smartphone, tablet, or desktop browser. Every sticker is automatically rendered to WhatsApp’s exact 512x512 pixel specifications with seamless transparent alpha channels and lightweight compression to guarantee instant sending in your group chats.\n\nSimply upload your camera roll snaps or self-portraits, let our AI background remover isolate your face or subject in a split second, add a playful bold outline, and layer animated emojis or witty speech bubbles. Use our built-in Sticker Pack tool to assemble matching packs of 3 to 30 stickers that you can import straight into WhatsApp or WhatsApp Web with zero hassle.',
+    intro: 'Transform your favorite personal photos, funny memes, and expressive quotes into vibrant custom stickers ready for WhatsApp. Unlike clunky mobile apps loaded with intrusive ads and watermark restrictions, our web-based WhatsApp Sticker Maker gives you complete creative freedom on any smartphone, tablet, or desktop browser. Every sticker is automatically rendered to WhatsApp’s exact 512x512 pixel specifications with seamless transparent alpha channels and lightweight compression to guarantee instant sending in your group chats.\n\nSimply upload your camera roll snaps or self-portraits, use the background remover to isolate your face or subject in a split second, add a playful bold outline, and layer animated emojis or witty speech bubbles. Use our built-in Sticker Pack tool to assemble matching packs of 3 to 30 stickers that you can import straight into WhatsApp or WhatsApp Web with zero hassle.',
     keywords: ['whatsapp sticker maker', 'create whatsapp stickers online', 'make custom whatsapp stickers', 'whatsapp sticker maker web', 'free whatsapp sticker pack creator', 'transparent 512x512 stickers'],
     specs: {
       recommendedSize: '512 x 512 px exact',

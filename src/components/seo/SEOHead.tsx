@@ -10,11 +10,11 @@ interface SEOHeadProps {
 export const SEOHead: React.FC<SEOHeadProps> = ({ currentRoute }) => {
   useEffect(() => {
     let title = 'Sticker Maker — Design Custom Stickers Free in Seconds';
-    let description = 'Create custom die-cut stickers online in seconds. AI background removal, auto white border, 1000+ templates, and instant transparent PNG or 300 DPI print-ready export. No signup required.';
+    let description = 'Create custom die-cut stickers online in seconds. One-click background removal, auto white border, 1000+ templates, and instant transparent PNG or 300 DPI print-ready export. No signup required.';
 
     if (currentRoute.type === 'editor') {
       title = 'Sticker Maker Online Editor — Free Custom Die-Cut Tool';
-      description = 'Design custom stickers with live die-cut border generator, AI background removal, curved text, and high-res transparent PNG download.';
+      description = 'Design custom stickers with live die-cut border generator, smart background removal, curved text, and high-res transparent PNG download.';
     } else if (currentRoute.type === 'templates') {
       title = 'Sticker Templates Library — 1000+ Ready-to-Use Vector Designs';
       description = 'Browse trending die-cut sticker templates across WhatsApp, Urdu calligraphy, memes, aesthetic quotes, and business logos. Customize and export free.';

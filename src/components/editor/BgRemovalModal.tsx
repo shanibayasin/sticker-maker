@@ -60,7 +60,7 @@ export const BgRemovalModal: React.FC<BgRemovalModalProps> = ({
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-neutral-900">AI Background Removal & Cutout</h3>
+              <h3 className="font-extrabold text-base text-neutral-900">Smart Background Removal & Cutout</h3>
               <p className="text-xs text-neutral-500">Preview and fine-tune transparent sticker edges</p>
             </div>
           </div>
@@ -81,7 +81,7 @@ export const BgRemovalModal: React.FC<BgRemovalModalProps> = ({
                 {cutoutSrc && (
                   <img
                     src={cutoutSrc}
-                    alt="AI Cutout Preview"
+                    alt="Background Cutout Preview"
                     className="max-w-full max-h-full object-contain filter drop-shadow-md"
                   />
                 )}
@@ -120,7 +120,7 @@ export const BgRemovalModal: React.FC<BgRemovalModalProps> = ({
               />
 
               <div className="absolute top-2 left-2 bg-neutral-900/70 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
-                AI Cutout (Transparent)
+                Cutout (Transparent)
               </div>
               <div className="absolute top-2 right-2 bg-neutral-900/70 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs">
                 Original Photo
@@ -131,7 +131,7 @@ export const BgRemovalModal: React.FC<BgRemovalModalProps> = ({
               {cutoutSrc && (
                 <img
                   src={cutoutSrc}
-                  alt="AI Cutout"
+                  alt="Transparent Cutout"
                   className="max-w-full max-h-full object-contain filter drop-shadow-md"
                 />
               )}

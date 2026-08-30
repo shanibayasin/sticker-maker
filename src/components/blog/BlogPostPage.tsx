@@ -152,7 +152,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) 
           </div>
           <h3 className="text-2xl font-extrabold">Ready to Create Your Custom Sticker?</h3>
           <p className="text-xs text-rose-100 max-w-md mx-auto">
-            Use our free web editor with automatic die-cut borders, AI background removal, and 300 DPI exports.
+            Use our free web editor with automatic die-cut borders, one-click background removal, and 300 DPI exports.
           </p>
           <button
             onClick={() => onNavigate({ type: 'editor' })}

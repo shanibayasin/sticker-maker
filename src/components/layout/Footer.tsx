@@ -76,7 +76,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </span>
             </div>
             <p className="text-xs text-neutral-400 leading-relaxed pr-6">
-              The fastest, lightest online sticker design studio. Engineered to replace bloated graphics software with instant AI background removal, customizable die-cut white borders, and 300 DPI print-ready vectors.
+              The fastest, lightest online sticker design studio. Engineered to replace bloated graphics software with instant background removal, customizable die-cut white borders, and 300 DPI print-ready vectors.
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs text-neutral-400">
               <Globe className="w-4 h-4 text-neutral-500" />

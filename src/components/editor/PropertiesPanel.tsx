@@ -279,7 +279,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 className="w-full flex items-center justify-center gap-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 text-xs font-semibold p-2 rounded-xl transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5 text-rose-500" />
-                <span>Re-run AI Background Removal</span>
+                <span>Re-run Background Removal</span>
               </button>
 
               {/* Opacity */}

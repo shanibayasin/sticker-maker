@@ -41,7 +41,7 @@ export const FEATURES_COPY: FeatureItem[] = [
   {
     id: "ai-bg-removal",
     iconName: "Wand2",
-    headline: "AI Background Remover",
+    headline: "Smart Background Remover",
     description: "Instantly isolate people, pets, logos, or illustrations with sub-pixel edge detection. Say goodbye to tedious lasso selections and hello to clean, transparent silhouettes in a fraction of a second.",
     badge: "Instant AI",
   },
@@ -142,7 +142,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     category: "general",
     question: "What's the best sticker maker app?",
-    answer: "The best sticker maker is one that gives you true die-cut white border generation, AI background removal, and transparent PNG exports without bloated software installations. StickerMaker is engineered specifically for sticker creation, making it faster, lighter, and more precise than general-purpose graphic suites like Canva.",
+    answer: "The best sticker maker is one that gives you true die-cut white border generation, instant background removal, and transparent PNG exports without bloated software installations. StickerMaker is engineered specifically for sticker creation, making it faster, lighter, and more precise than general-purpose graphic suites like Canva.",
   },
   {
     category: "whatsapp",
@@ -157,7 +157,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     category: "features",
     question: "How to remove background from a sticker image?",
-    answer: "Simply upload your JPG or PNG image into the editor. Our integrated AI background remover identifies the primary subject, strips away distracting backgrounds with smooth anti-aliased edges, and automatically places a white sticker border around your subject silhouette in one fluid step.",
+    answer: "Simply upload your JPG or PNG image into the editor. Our background remover identifies the primary subject, strips away distracting backgrounds with smooth anti-aliased edges, and automatically places a white sticker border around your subject silhouette in one fluid step.",
   },
   {
     category: "general",

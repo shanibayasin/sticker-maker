@@ -1656,7 +1656,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         </button>
       </div>
 
-      {/* 3. AI BACKGROUND REMOVAL BEFORE/AFTER MODAL */}
+      {/* 3. BACKGROUND REMOVAL BEFORE/AFTER MODAL */}
       <BgRemovalModal
         isOpen={bgModalOpen}
         rawImageSrc={rawUploadSrc}

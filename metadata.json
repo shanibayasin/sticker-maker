@@ -1,6 +1,6 @@
 {
   "name": "Sticker Maker — Design Custom Stickers Free in Seconds",
-  "description": "Create custom die-cut stickers online for free. AI background removal, auto white border, 1000+ templates, and instant transparent PNG or print-ready PDF export.",
+  "description": "Create custom die-cut stickers online for free. One-click background removal, auto white border, 1000+ templates, and instant transparent PNG or print-ready PDF export.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

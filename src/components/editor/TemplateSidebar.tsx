@@ -179,7 +179,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
             activeTab === 'uploads' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
           }`}
-          title="Uploads & AI Cutout"
+          title="Uploads & Cutout"
         >
           <ImageIcon className="w-4 h-4" />
           <span className="hidden sm:inline">Upload</span>
@@ -450,10 +450,10 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
             <div>
               <h3 className="font-extrabold text-sm text-neutral-900 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-rose-500" />
-                <span>Upload & Auto AI Cutout</span>
+                <span>Upload & Auto Cutout</span>
               </h3>
               <p className="text-xs text-neutral-500">
-                Upload photos, graphics, or selfies. AI strips background with instant preview.
+                Upload photos, graphics, or selfies. Instant background removal with preview.
               </p>
             </div>
 
@@ -497,7 +497,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 flex items-start gap-2">
               <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-              <span>Edge AI algorithm automatically removes background and wraps with die-cut vinyl stroke.</span>
+              <span>Smart edge detection automatically removes the background and wraps it with a die-cut vinyl stroke.</span>
             </div>
           </div>
         )}
