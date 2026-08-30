@@ -10,6 +10,8 @@ import { BlogPage } from './components/blog/BlogPage';
 import { BlogPostPage } from './components/blog/BlogPostPage';
 import { PricingPage } from './components/pricing/PricingPage';
 import { AboutPage } from './components/about/AboutPage';
+import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
+import { TermsPage } from './components/legal/TermsPage';
 import { SEOHead } from './components/seo/SEOHead';
 
 export default function App() {
@@ -39,6 +41,12 @@ export default function App() {
     if (path === '/about') {
       return { type: 'about' };
     }
+    if (path === '/privacy-policy') {
+      return { type: 'privacy-policy' };
+    }
+    if (path === '/terms') {
+      return { type: 'terms' };
+    }
     return { type: 'home' };
   });
 
@@ -64,6 +72,10 @@ export default function App() {
       newPath = '/pricing';
     } else if (route.type === 'about') {
       newPath = '/about';
+    } else if (route.type === 'privacy-policy') {
+      newPath = '/privacy-policy';
+    } else if (route.type === 'terms') {
+      newPath = '/terms';
     }
 
     window.history.pushState({}, '', newPath);
@@ -89,6 +101,10 @@ export default function App() {
         setCurrentRoute({ type: 'pricing' });
       } else if (path === '/about') {
         setCurrentRoute({ type: 'about' });
+      } else if (path === '/privacy-policy') {
+        setCurrentRoute({ type: 'privacy-policy' });
+      } else if (path === '/terms') {
+        setCurrentRoute({ type: 'terms' });
       } else {
         setCurrentRoute({ type: 'home' });
       }
@@ -151,6 +167,14 @@ export default function App() {
 
         {currentRoute.type === 'about' && (
           <AboutPage onNavigate={handleNavigate} />
+        )}
+
+        {currentRoute.type === 'privacy-policy' && (
+          <PrivacyPolicyPage onNavigate={handleNavigate} />
+        )}
+
+        {currentRoute.type === 'terms' && (
+          <TermsPage onNavigate={handleNavigate} />
         )}
       </main>
 

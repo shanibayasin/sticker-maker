@@ -213,9 +213,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="mt-12 pt-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
           <p>© {new Date().getFullYear()} StickerMaker. Built for high-speed custom sticker creation.</p>
           <div className="flex items-center gap-4">
-            <span>Privacy Policy</span>
+            <button
+              type="button"
+              onClick={() => onNavigate({ type: 'privacy-policy' })}
+              className="hover:text-rose-400 transition-colors"
+            >
+              Privacy Policy
+            </button>
             <span>•</span>
-            <span>Terms of Service</span>
+            <button
+              type="button"
+              onClick={() => onNavigate({ type: 'terms' })}
+              className="hover:text-rose-400 transition-colors"
+            >
+              Terms of Service
+            </button>
             <span>•</span>
             <span className="flex items-center gap-1">
               Crafted with <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> for creators

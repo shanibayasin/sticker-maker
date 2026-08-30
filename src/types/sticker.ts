@@ -127,4 +127,6 @@ export type PageRoute =
   | { type: 'blog' }
   | { type: 'blog-post'; slug: string }
   | { type: 'pricing' }
-  | { type: 'about' };
+  | { type: 'about' }
+  | { type: 'privacy-policy' }
+  | { type: 'terms' };
