@@ -8,6 +8,7 @@ import {
 } from '../../data/marketingData';
 import { STICKER_TEMPLATES } from '../../data/templatesData';
 import { DieCutStickerCard } from '../common/DieCutStickerCard';
+import { StickerDieCutGraphic } from '../common/StickerDieCutGraphic';
 import { StickerPreviewModal } from '../common/StickerPreviewModal';
 import { 
   Sparkles, 
