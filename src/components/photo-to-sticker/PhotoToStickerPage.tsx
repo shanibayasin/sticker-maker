@@ -54,32 +54,27 @@ export const PhotoToStickerPage: React.FC<PhotoToStickerPageProps> = ({ onNaviga
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
   const resetFlow = () => {
     setProcessedImage(null);
+    setPendingImageSrc(null);
     setError(null);
     setCopyStatus(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleProcessFile = async (file: File | null | undefined) => {
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload a valid image file.');
-      return;
-    }
-
+  const processStickerSource = async (rawDataUrl: string, mode: 'remove' | 'keep') => {
     setIsProcessing(true);
     setError(null);
     setCopyStatus(null);
+    setPendingImageSrc(null);
 
     try {
-      const rawDataUrl = await fileToDataUrl(file);
-      const removedBg = await removeBackgroundLocally(rawDataUrl, 45);
-      const img = await loadImage(removedBg);
+      const sourceForSticker = mode === 'remove' ? await removeBackgroundLocally(rawDataUrl, 45) : rawDataUrl;
+      const img = await loadImage(sourceForSticker);
 
       const sourceCanvas = document.createElement('canvas');
       sourceCanvas.width = img.naturalWidth || img.width || 600;
@@ -98,6 +93,25 @@ export const PhotoToStickerPage: React.FC<PhotoToStickerPageProps> = ({ onNaviga
       setError('We could not finish the sticker conversion. Please try another photo.');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleProcessFile = async (file: File | null | undefined) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload a valid image file.');
+      return;
+    }
+
+    try {
+      const rawDataUrl = await fileToDataUrl(file);
+      setPendingImageSrc(rawDataUrl);
+      setError(null);
+      setCopyStatus(null);
+    } catch (uploadError) {
+      console.error(uploadError);
+      setError('We could not read that image file. Please try another photo.');
     }
   };
 
@@ -163,7 +177,7 @@ export const PhotoToStickerPage: React.FC<PhotoToStickerPageProps> = ({ onNaviga
 
         <div className="space-y-2">
           <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900">Drop your photo here</h2>
-          <p className="text-sm sm:text-base text-neutral-600">PNG, JPG, or WebP — we remove the background and turn it into a sticker in seconds.</p>
+          <p className="text-sm sm:text-base text-neutral-600">PNG, JPG, or WebP — choose whether to remove the background or keep it for meme-style stickers.</p>
         </div>
 
         <button
@@ -182,6 +196,28 @@ export const PhotoToStickerPage: React.FC<PhotoToStickerPageProps> = ({ onNaviga
           className="hidden"
           onChange={(e) => void handleProcessFile(e.target.files?.[0])}
         />
+
+        {pendingImageSrc && (
+          <div className="w-full max-w-md rounded-2xl border border-neutral-200 bg-neutral-50 p-3 text-left shadow-sm">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => void processStickerSource(pendingImageSrc, 'remove')}
+                className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100"
+              >
+                Remove Background
+              </button>
+              <button
+                type="button"
+                onClick={() => void processStickerSource(pendingImageSrc, 'keep')}
+                className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-bold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                Keep Original Background
+              </button>
+            </div>
+            <p className="mt-2 text-[11px] text-neutral-500">Tip: Keep the background for meme-style stickers.</p>
+          </div>
+        )}
       </div>
     </div>
   );

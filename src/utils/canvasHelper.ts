@@ -99,6 +99,23 @@ export function renderDieCutStickerBorder(
   return outputCanvas;
 }
 
+export type BackgroundRemovalMode = 'remove' | 'keep';
+
+export function resolveStickerImageSource({
+  rawImageSrc,
+  processedImageSrc,
+  backgroundRemovalMode,
+}: {
+  rawImageSrc: string;
+  processedImageSrc?: string | null;
+  backgroundRemovalMode: BackgroundRemovalMode;
+}): string {
+  if (backgroundRemovalMode === 'keep') {
+    return rawImageSrc;
+  }
+  return processedImageSrc || rawImageSrc;
+}
+
 /**
  * Client-side background removal algorithm with customizable tolerance & edge feathering
  */

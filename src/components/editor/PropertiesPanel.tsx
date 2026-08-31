@@ -31,6 +31,7 @@ interface PropertiesPanelProps {
   onDeleteSelected: () => void;
   onLayerOrder: (direction: 'up' | 'down' | 'front' | 'back') => void;
   onTriggerBgRemoval: () => void;
+  onRestoreOriginalBackground?: () => void;
   onReplaceImage?: (elementId?: string) => void;
   borderWidth: number;
   onBorderWidthChange: (w: number) => void;
@@ -51,6 +52,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onDeleteSelected,
   onLayerOrder,
   onTriggerBgRemoval,
+  onRestoreOriginalBackground,
   onReplaceImage,
   borderWidth,
   onBorderWidthChange,
@@ -294,6 +296,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <Sparkles className="w-3.5 h-3.5 text-rose-500" />
                 <span>Re-run Background Removal</span>
               </button>
+
+              {selectedElement.backgroundRemoved && onRestoreOriginalBackground && (
+                <button
+                  type="button"
+                  onClick={onRestoreOriginalBackground}
+                  className="w-full flex items-center justify-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold p-2 rounded-xl transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Restore Original Background</span>
+                </button>
+              )}
 
               {/* Opacity */}
               <div className="space-y-1">

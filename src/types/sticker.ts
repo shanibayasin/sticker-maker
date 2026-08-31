@@ -32,6 +32,8 @@ export interface CanvasElement {
   type: 'text' | 'image' | 'shape' | 'badge';
   content?: string;
   imgSrc?: string;
+  originalImageSrc?: string;
+  backgroundRemoved?: boolean;
   imgElement?: HTMLImageElement;
   x: number;
   y: number;

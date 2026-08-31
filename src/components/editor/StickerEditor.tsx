@@ -1082,11 +1082,16 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   };
 
   // Apply processed cutout image from modal to canvas
-  const handleApplyCutoutImage = (finalSrc: string) => {
+  const handleApplyCutoutImage = (
+    finalSrc: string,
+    options?: { backgroundRemoved: boolean; originalSrc: string }
+  ) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       imageCacheRef.current.set(finalSrc, img);
+      const originalSrc = options?.originalSrc || finalSrc;
+      const backgroundRemoved = options?.backgroundRemoved ?? true;
 
       if (replacingElementId) {
         // User is replacing an existing image in place
@@ -1101,6 +1106,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                 ...elem,
                 type: 'image' as const,
                 imgSrc: finalSrc,
+                originalImageSrc: originalSrc,
+                backgroundRemoved,
                 imgElement: img,
                 width,
                 height,
@@ -1122,6 +1129,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           id: `elem-${Date.now()}`,
           type: 'image',
           imgSrc: finalSrc,
+          originalImageSrc: originalSrc,
+          backgroundRemoved,
           imgElement: img,
           x: canvasSize.width / 2,
           y: canvasSize.height / 2,
@@ -1143,6 +1152,26 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     };
     img.src = finalSrc;
   };
+
+  const handleRestoreOriginalBackground = useCallback(() => {
+    if (!selectedId) return;
+    const selected = elements.find((elem) => elem.id === selectedId);
+    if (!selected || !selected.originalImageSrc) return;
+
+    setElements((prev) => {
+      const next = prev.map((elem) => {
+        if (elem.id !== selectedId) return elem;
+        return {
+          ...elem,
+          imgSrc: selected.originalImageSrc,
+          imgElement: undefined,
+          backgroundRemoved: false,
+        };
+      });
+      pushHistory(next);
+      return next;
+    });
+  }, [elements, selectedId, pushHistory]);
 
   // Element Actions
   const handleUpdateSelected = (props: Partial<CanvasElement>) => {
@@ -1611,10 +1640,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             onReplaceImage={handleTriggerReplaceImage}
             onTriggerBgRemoval={() => {
               if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                setRawUploadSrc(selectedElement.imgSrc);
+                setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
                 setBgModalOpen(true);
               }
             }}
+            onRestoreOriginalBackground={handleRestoreOriginalBackground}
             borderWidth={borderWidth}
             onBorderWidthChange={setBorderWidth}
             borderColor={borderColor}
@@ -1654,10 +1684,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                     onReplaceImage={handleTriggerReplaceImage}
                     onTriggerBgRemoval={() => {
                       if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                        setRawUploadSrc(selectedElement.imgSrc);
+                        setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
                         setBgModalOpen(true);
                       }
                     }}
+                    onRestoreOriginalBackground={handleRestoreOriginalBackground}
                     borderWidth={borderWidth}
                     onBorderWidthChange={setBorderWidth}
                     borderColor={borderColor}
