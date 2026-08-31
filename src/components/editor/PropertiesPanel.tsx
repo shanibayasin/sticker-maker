@@ -75,42 +75,55 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     { type: 'arch', label: 'Arch' },
   ];
 
+  const imageOpacity = selectedElement?.opacity ?? 1;
+  const brightness = selectedElement?.filterBrightness ?? 100;
+  const contrast = selectedElement?.filterContrast ?? 100;
+  const saturation = selectedElement?.filterSaturation ?? 100;
+  const blur = selectedElement?.filterBlur ?? 0;
+
   return (
     <aside 
       aria-label="Properties and Layers Panel" 
       className={
         isMobileModal
-          ? "w-full max-h-[80vh] bg-white rounded-t-3xl p-5 space-y-5 overflow-y-auto z-50 select-none shadow-2xl border-t border-neutral-200"
+          ? "w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-neutral-200 flex flex-col"
           : "w-72 bg-white border-l border-neutral-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none"
       }
     >
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-neutral-150">
-        <span className="font-extrabold text-xs uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
-          <Layers className="w-3.5 h-3.5 text-rose-500" />
-          <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
-        </span>
-        <div className="flex items-center gap-2">
-          {selectedElement && (
-            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md capitalize border border-rose-200">
-              {selectedElement.type}
-            </span>
-          )}
-          {onCloseMobile && isMobileModal && (
-            <button
-              onClick={onCloseMobile}
-              className="p-1 text-neutral-400 hover:text-neutral-700 rounded-lg min-h-[32px] min-w-[32px] flex items-center justify-center"
-              title="Close Panel"
-            >
-              <Trash2 className="w-4 h-4 hidden" />
-              <span className="text-xs font-bold text-neutral-600">Done</span>
-            </button>
-          )}
+      <div className="shrink-0">
+        {isMobileModal && (
+          <div className="mb-2 flex justify-center">
+            <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+          </div>
+        )}
+        <div className="flex items-center justify-between pb-2 border-b border-neutral-150">
+          <span className="font-extrabold text-xs uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-rose-500" />
+            <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
+          </span>
+          <div className="flex items-center gap-2">
+            {selectedElement && (
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md capitalize border border-rose-200">
+                {selectedElement.type}
+              </span>
+            )}
+            {onCloseMobile && isMobileModal && (
+              <button
+                onClick={onCloseMobile}
+                className="p-1 text-neutral-400 hover:text-neutral-700 rounded-lg min-h-[32px] min-w-[32px] flex items-center justify-center"
+                title="Close Panel"
+              >
+                <Trash2 className="w-4 h-4 hidden" />
+                <span className="text-xs font-bold text-neutral-600">Done</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {selectedElement ? (
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto space-y-4 pr-1 -mr-1 pb-2">
           {/* 1. TEXT PROPERTIES */}
           {selectedElement.type === 'text' && (
             <div className="space-y-3">
@@ -287,7 +300,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Opacity</span>
                   <span className="font-bold text-neutral-800">
-                    {Math.round((selectedElement.opacity ?? 1) * 100)}%
+                    {Math.round(imageOpacity * 100)}%
                   </span>
                 </div>
                 <input
@@ -295,9 +308,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="0.1"
                   max="1"
                   step="0.05"
-                  value={selectedElement.opacity ?? 1}
+                  value={imageOpacity}
                   onChange={(e) => onUpdateSelected({ opacity: Number(e.target.value) })}
-                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
+                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
+                  style={{ touchAction: 'pan-y' }}
                 />
               </div>
 
@@ -306,16 +320,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Brightness</span>
                   <span className="font-bold text-neutral-800">
-                    {selectedElement.filterBrightness ?? 100}%
+                    {brightness}%
                   </span>
                 </div>
                 <input
                   type="range"
                   min="20"
                   max="200"
-                  value={selectedElement.filterBrightness ?? 100}
+                  value={brightness}
                   onChange={(e) => onUpdateSelected({ filterBrightness: Number(e.target.value) })}
-                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
+                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
+                  style={{ touchAction: 'pan-y' }}
                 />
               </div>
 
@@ -324,16 +339,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Contrast</span>
                   <span className="font-bold text-neutral-800">
-                    {selectedElement.filterContrast ?? 100}%
+                    {contrast}%
                   </span>
                 </div>
                 <input
                   type="range"
                   min="20"
                   max="200"
-                  value={selectedElement.filterContrast ?? 100}
+                  value={contrast}
                   onChange={(e) => onUpdateSelected({ filterContrast: Number(e.target.value) })}
-                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
+                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
+                  style={{ touchAction: 'pan-y' }}
                 />
               </div>
 
@@ -342,16 +358,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Saturation</span>
                   <span className="font-bold text-neutral-800">
-                    {selectedElement.filterSaturation ?? 100}%
+                    {saturation}%
                   </span>
                 </div>
                 <input
                   type="range"
                   min="0"
                   max="200"
-                  value={selectedElement.filterSaturation ?? 100}
+                  value={saturation}
                   onChange={(e) => onUpdateSelected({ filterSaturation: Number(e.target.value) })}
-                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
+                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
+                  style={{ touchAction: 'pan-y' }}
                 />
               </div>
 
@@ -360,16 +377,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Blur Softness</span>
                   <span className="font-bold text-neutral-800">
-                    {selectedElement.filterBlur ?? 0}px
+                    {blur}px
                   </span>
                 </div>
                 <input
                   type="range"
                   min="0"
                   max="12"
-                  value={selectedElement.filterBlur ?? 0}
+                  value={blur}
                   onChange={(e) => onUpdateSelected({ filterBlur: Number(e.target.value) })}
-                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
+                  className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
+                  style={{ touchAction: 'pan-y' }}
                 />
               </div>
 

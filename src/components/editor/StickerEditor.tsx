@@ -56,6 +56,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const [activeTab, setActiveTab] = useState<'templates' | 'text' | 'uploads' | 'elements' | 'border' | 'pack'>('border');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState<boolean>(false);
   const [isPropertiesOpenMobile, setIsPropertiesOpenMobile] = useState<boolean>(false);
+  const [mobileSheetHeight, setMobileSheetHeight] = useState<number>(62);
+  const mobileSheetDragRef = useRef<{ startY: number; startHeight: number } | null>(null);
 
   // Canvas dimensions & presets
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number; name: string }>({
@@ -431,6 +433,22 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       loadTemplate(STICKER_TEMPLATES[0]);
     }
   }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements, loadProcessedPhotoFromSession]);
+
+  const handleMobileSheetDragStart = (clientY: number) => {
+    mobileSheetDragRef.current = { startY: clientY, startHeight: mobileSheetHeight };
+  };
+
+  const handleMobileSheetDragMove = (clientY: number) => {
+    if (!mobileSheetDragRef.current) return;
+    const deltaY = mobileSheetDragRef.current.startY - clientY;
+    const deltaPct = (deltaY / window.innerHeight) * 100;
+    const nextHeight = Math.min(82, Math.max(45, mobileSheetDragRef.current.startHeight + deltaPct));
+    setMobileSheetHeight(nextHeight);
+  };
+
+  const handleMobileSheetDragEnd = () => {
+    mobileSheetDragRef.current = null;
+  };
 
   // Fit to screen helper
   const handleFitToScreen = () => {
@@ -1609,31 +1627,45 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         {/* MOBILE BOTTOM SHEET FOR PROPERTIES / LAYERS */}
         {isPropertiesOpenMobile && (
           <div className="fixed inset-0 z-50 lg:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150" onClick={() => setIsPropertiesOpenMobile(false)}>
-            <div className="w-full" onClick={(e) => e.stopPropagation()}>
-              <PropertiesPanel
-                selectedElement={selectedElement}
-                elements={elements}
-                onSelectElement={setSelectedId}
-                onUpdateSelected={handleUpdateSelected}
-                onDuplicateSelected={handleDuplicateSelected}
-                onDeleteSelected={handleDeleteSelected}
-                onLayerOrder={handleLayerOrder}
-                onReplaceImage={handleTriggerReplaceImage}
-                onTriggerBgRemoval={() => {
-                  if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                    setRawUploadSrc(selectedElement.imgSrc);
-                    setBgModalOpen(true);
-                  }
-                }}
-                borderWidth={borderWidth}
-                onBorderWidthChange={setBorderWidth}
-                borderColor={borderColor}
-                onBorderColorChange={setBorderColor}
-                hasShadow={hasShadow}
-                onHasShadowToggle={() => setHasShadow(!hasShadow)}
-                isMobileModal={true}
-                onCloseMobile={() => setIsPropertiesOpenMobile(false)}
-              />
+            <div className="w-full flex justify-center" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full max-w-md bg-white rounded-t-[28px] shadow-2xl border-t border-neutral-200 overflow-hidden"
+                style={{ height: `${mobileSheetHeight}vh`, maxHeight: `${mobileSheetHeight}vh` }}
+              >
+                <div
+                  className="flex cursor-grab touch-none select-none items-center justify-center border-b border-neutral-100 bg-white px-4 py-2 active:cursor-grabbing"
+                  onPointerDown={(e) => handleMobileSheetDragStart(e.clientY)}
+                  onPointerMove={(e) => handleMobileSheetDragMove(e.clientY)}
+                  onPointerUp={handleMobileSheetDragEnd}
+                  onPointerLeave={handleMobileSheetDragEnd}
+                >
+                  <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+                </div>
+                <PropertiesPanel
+                  selectedElement={selectedElement}
+                  elements={elements}
+                  onSelectElement={setSelectedId}
+                  onUpdateSelected={handleUpdateSelected}
+                  onDuplicateSelected={handleDuplicateSelected}
+                  onDeleteSelected={handleDeleteSelected}
+                  onLayerOrder={handleLayerOrder}
+                  onReplaceImage={handleTriggerReplaceImage}
+                  onTriggerBgRemoval={() => {
+                    if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
+                      setRawUploadSrc(selectedElement.imgSrc);
+                      setBgModalOpen(true);
+                    }
+                  }}
+                  borderWidth={borderWidth}
+                  onBorderWidthChange={setBorderWidth}
+                  borderColor={borderColor}
+                  onBorderColorChange={setBorderColor}
+                  hasShadow={hasShadow}
+                  onHasShadowToggle={() => setHasShadow(!hasShadow)}
+                  isMobileModal={true}
+                  onCloseMobile={() => setIsPropertiesOpenMobile(false)}
+                />
+              </div>
             </div>
           </div>
         )}
