@@ -85,8 +85,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ currentRoute }) => {
         title = 'WhatsApp Sticker Maker — Create Custom Stickers Free';
         description = 'Design custom WhatsApp stickers online in seconds with 512x512 export, transparent background, and sticker pack tools.';
       } else if (currentRoute.slug === 'photo-to-sticker') {
-        title = 'Photo to Sticker Maker — Turn Pictures Into Stickers';
-        description = 'Turn any photo into a sticker with background cleanup, custom borders, and instant transparent sticker export.';
+        title = 'Photo to Sticker Converter — Free Online Tool | StickerMaker';
+        description = 'Turn any photo into a sticker for free with instant background removal, die-cut borders, and transparent PNG download in seconds.';
       } else if (currentRoute.slug === 'custom-sticker-maker') {
         title = 'Custom Sticker Maker — Make Stickers from Your Photos';
         description = 'Create custom stickers online from photos, quotes, logos, and templates with no design experience required.';

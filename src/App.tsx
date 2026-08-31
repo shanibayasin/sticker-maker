@@ -12,6 +12,7 @@ import { PricingPage } from './components/pricing/PricingPage';
 import { AboutPage } from './components/about/AboutPage';
 import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
 import { TermsPage } from './components/legal/TermsPage';
+import { PhotoToStickerPage } from './components/photo-to-sticker/PhotoToStickerPage';
 import { SEOHead } from './components/seo/SEOHead';
 
 export default function App() {
@@ -154,7 +155,7 @@ export default function App() {
             {currentRoute.type === 'landing' && currentRoute.slug === 'whatsapp-sticker-maker' ? (
               <CategoryPage category="whatsapp" onNavigate={handleNavigate} />
             ) : currentRoute.type === 'landing' && currentRoute.slug === 'photo-to-sticker' ? (
-              <CategoryPage category="whatsapp" onNavigate={handleNavigate} />
+              <PhotoToStickerPage onNavigate={handleNavigate} />
             ) : (
               <HomePage onNavigate={handleNavigate} />
             )}

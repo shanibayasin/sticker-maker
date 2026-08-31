@@ -121,13 +121,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               <button
                 id="hero-secondary-cta-btn"
-                onClick={() => {
-                  const el = document.getElementById('templates-section');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => onNavigate({ type: 'landing', slug: 'photo-to-sticker' })}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-neutral-50 text-neutral-800 font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl border border-neutral-300 hover:border-neutral-400 transition-all shadow-2xs min-h-12"
               >
-                <span>{HERO_COPY.secondaryCta}</span>
+                <span>Photo to Sticker</span>
               </button>
             </div>
 

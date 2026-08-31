@@ -39,6 +39,13 @@ export const HERO_COPY = {
 
 export const FEATURES_COPY: FeatureItem[] = [
   {
+    id: "photo-to-sticker",
+    iconName: "Wand2",
+    headline: "Photo to Sticker",
+    description: "Upload any photo and get a sticker-ready result in one step with automatic background removal, white die-cut borders, and instant export options.",
+    badge: "1-Step Flow",
+  },
+  {
     id: "ai-bg-removal",
     iconName: "Wand2",
     headline: "Smart Background Remover",

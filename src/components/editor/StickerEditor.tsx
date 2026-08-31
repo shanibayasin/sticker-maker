@@ -308,6 +308,49 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleUndo, handleRedo, selectedId]);
 
+  // Load processed image from the Photo to Sticker flow into the full editor
+  const loadProcessedPhotoFromSession = useCallback(() => {
+    const storedImage = sessionStorage.getItem('stickermaker_photo_to_sticker_processed');
+    if (!storedImage) return false;
+
+    const img = new Image();
+    img.onload = () => {
+      imageCacheRef.current.set(storedImage, img);
+
+      const maxDim = 420;
+      const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+      const width = Math.max(120, img.width * scale);
+      const height = Math.max(120, img.height * scale);
+
+      const newElem: CanvasElement = {
+        id: `photo-conversion-${Date.now()}`,
+        type: 'image',
+        imgSrc: storedImage,
+        imgElement: img,
+        x: canvasSize.width / 2,
+        y: canvasSize.height / 2,
+        width,
+        height,
+        opacity: 1,
+        angle: 0,
+        filterBrightness: 100,
+        filterContrast: 100,
+        filterSaturation: 100,
+        filterBlur: 0,
+      };
+
+      setElements([newElem]);
+      setSelectedId(newElem.id);
+      setBorderWidth(8);
+      setBorderColor('#FFFFFF');
+      setHasShadow(true);
+      pushHistory([newElem]);
+      sessionStorage.removeItem('stickermaker_photo_to_sticker_processed');
+    };
+    img.src = storedImage;
+    return true;
+  }, [canvasSize.width, canvasSize.height, pushHistory]);
+
   // Load Template Function
   const loadTemplate = useCallback((tmpl: StickerTemplate) => {
     setBorderWidth(tmpl.borderWidth);
@@ -347,6 +390,10 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
   // Initial Boot: Check URL query / localStorage / default template
   useEffect(() => {
+    if (loadProcessedPhotoFromSession()) {
+      return;
+    }
+
     let targetTemplate: StickerTemplate | undefined;
     if (initialTemplateId) {
       targetTemplate = STICKER_TEMPLATES.find((t) => t.id === initialTemplateId);
@@ -383,7 +430,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       // Default to first template
       loadTemplate(STICKER_TEMPLATES[0]);
     }
-  }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements]);
+  }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements, loadProcessedPhotoFromSession]);
 
   // Fit to screen helper
   const handleFitToScreen = () => {

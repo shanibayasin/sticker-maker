@@ -154,13 +154,22 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) 
           <p className="text-xs text-rose-100 max-w-md mx-auto">
             Use our free web editor with automatic die-cut borders, one-click background removal, and 300 DPI exports.
           </p>
-          <button
-            onClick={() => onNavigate({ type: 'editor' })}
-            className="inline-flex items-center gap-2 bg-white text-rose-600 hover:bg-rose-50 font-bold text-xs px-6 py-3 rounded-xl shadow transition-colors"
-          >
-            <Scissors className="w-4 h-4" />
-            <span>Launch Sticker Maker</span>
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={() => onNavigate({ type: 'editor' })}
+              className="inline-flex items-center gap-2 bg-white text-rose-600 hover:bg-rose-50 font-bold text-xs px-6 py-3 rounded-xl shadow transition-colors"
+            >
+              <Scissors className="w-4 h-4" />
+              <span>Launch Sticker Maker</span>
+            </button>
+            <button
+              onClick={() => onNavigate({ type: 'landing', slug: 'photo-to-sticker' })}
+              className="inline-flex items-center gap-2 border border-white/60 bg-white/10 text-white hover:bg-white/15 font-bold text-xs px-6 py-3 rounded-xl transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Open Photo to Sticker</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
