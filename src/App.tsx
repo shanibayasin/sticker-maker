@@ -24,6 +24,15 @@ export default function App() {
     if (path.startsWith('/templates')) {
       return { type: 'templates' };
     }
+    if (path === '/sticker-maker' || path === '/free-sticker-maker' || path === '/custom-sticker-maker') {
+      return { type: 'landing', slug: path === '/sticker-maker' ? 'sticker-maker' : path === '/free-sticker-maker' ? 'free-sticker-maker' : 'custom-sticker-maker' };
+    }
+    if (path === '/whatsapp-sticker-maker') {
+      return { type: 'landing', slug: 'whatsapp-sticker-maker' };
+    }
+    if (path === '/photo-to-sticker') {
+      return { type: 'landing', slug: 'photo-to-sticker' };
+    }
     if (path.startsWith('/sticker-maker/')) {
       const cat = path.replace('/sticker-maker/', '') as StickerCategory;
       return { type: 'category', category: cat };
@@ -64,6 +73,8 @@ export default function App() {
       if (route.category) newPath += `?category=${route.category}`;
     } else if (route.type === 'category') {
       newPath = `/sticker-maker/${route.category}`;
+    } else if (route.type === 'landing') {
+      newPath = `/${route.slug}`;
     } else if (route.type === 'blog') {
       newPath = '/blog';
     } else if (route.type === 'blog-post') {
@@ -89,6 +100,12 @@ export default function App() {
         setCurrentRoute({ type: 'editor' });
       } else if (path.startsWith('/templates')) {
         setCurrentRoute({ type: 'templates' });
+      } else if (path === '/sticker-maker' || path === '/free-sticker-maker' || path === '/custom-sticker-maker') {
+        setCurrentRoute({ type: 'landing', slug: path === '/sticker-maker' ? 'sticker-maker' : path === '/free-sticker-maker' ? 'free-sticker-maker' : 'custom-sticker-maker' });
+      } else if (path === '/whatsapp-sticker-maker') {
+        setCurrentRoute({ type: 'landing', slug: 'whatsapp-sticker-maker' });
+      } else if (path === '/photo-to-sticker') {
+        setCurrentRoute({ type: 'landing', slug: 'photo-to-sticker' });
       } else if (path.startsWith('/sticker-maker/')) {
         const cat = path.replace('/sticker-maker/', '') as StickerCategory;
         setCurrentRoute({ type: 'category', category: cat });
@@ -124,8 +141,16 @@ export default function App() {
 
       {/* Main View Area */}
       <main className="flex-1 flex flex-col">
-        {currentRoute.type === 'home' && (
-          <HomePage onNavigate={handleNavigate} />
+        {(currentRoute.type === 'home' || currentRoute.type === 'landing') && (
+          <>
+            {currentRoute.type === 'landing' && currentRoute.slug === 'whatsapp-sticker-maker' ? (
+              <CategoryPage category="whatsapp" onNavigate={handleNavigate} />
+            ) : currentRoute.type === 'landing' && currentRoute.slug === 'photo-to-sticker' ? (
+              <CategoryPage category="whatsapp" onNavigate={handleNavigate} />
+            ) : (
+              <HomePage onNavigate={handleNavigate} />
+            )}
+          </>
         )}
 
         {currentRoute.type === 'templates' && (

@@ -5,6 +5,7 @@ export default function handler(req, res) {
 
   const text = `User-agent: *
 Allow: /
+Disallow: /api/
 Sitemap: https://stickermaker.app/sitemap.xml
 `;
 

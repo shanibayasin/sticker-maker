@@ -120,7 +120,7 @@ export interface BlogPost {
 }
 
 export type PageRoute = 
-  | { type: 'home' }
+  | { type: 'home'; landingSlug?: 'sticker-maker' | 'free-sticker-maker' | 'custom-sticker-maker' }
   | { type: 'editor'; category?: StickerCategory; templateId?: string }
   | { type: 'category'; category: StickerCategory }
   | { type: 'templates'; category?: StickerCategory | 'all' }
@@ -129,4 +129,5 @@ export type PageRoute =
   | { type: 'pricing' }
   | { type: 'about' }
   | { type: 'privacy-policy' }
-  | { type: 'terms' };
+  | { type: 'terms' }
+  | { type: 'landing'; slug: 'sticker-maker' | 'free-sticker-maker' | 'whatsapp-sticker-maker' | 'photo-to-sticker' | 'custom-sticker-maker' };

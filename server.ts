@@ -51,10 +51,17 @@ async function startServer() {
 
     const staticPages = [
       { loc: '/', priority: '1.0', changefreq: 'daily' },
+      { loc: '/sticker-maker', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/free-sticker-maker', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/whatsapp-sticker-maker', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/photo-to-sticker', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/custom-sticker-maker', priority: '0.9', changefreq: 'weekly' },
       { loc: '/create/stickers', priority: '0.9', changefreq: 'weekly' },
       { loc: '/blog', priority: '0.8', changefreq: 'weekly' },
       { loc: '/pricing', priority: '0.7', changefreq: 'monthly' },
       { loc: '/about', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/privacy-policy', priority: '0.5', changefreq: 'monthly' },
+      { loc: '/terms', priority: '0.5', changefreq: 'monthly' },
     ];
 
     const categoryPages = categories.map((cat) => ({
@@ -94,6 +101,7 @@ ${allPages
     res.type('text/plain');
     res.send(`User-agent: *
 Allow: /
+Disallow: /api/
 Sitemap: https://stickermaker.app/sitemap.xml
 `);
   });
