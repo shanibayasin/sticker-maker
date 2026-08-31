@@ -5,8 +5,9 @@ export default function handler(req, res) {
 
   const text = `User-agent: *
 Allow: /
+Allow: /google6fb636039de5c2e2.html
 Disallow: /api/
-Sitemap: https://stickermaker.app/sitemap.xml
+Sitemap: https://sticker-maker-online.vercel.app/sitemap.xml
 `;
 
   res.setHeader('Content-Type', 'text/plain');

@@ -45,7 +45,7 @@ async function startServer() {
 
   // Programmatic XML Sitemap for SEO
   app.get('/sitemap.xml', (req, res) => {
-    const baseUrl = 'https://stickermaker.app';
+    const baseUrl = 'https://sticker-maker-online.vercel.app';
     const categories = ['funny', 'aesthetic', 'logo', 'whatsapp', 'instagram', 'quotes', 'urdu'];
     const blogPosts = ['how-to-make-whatsapp-stickers', 'best-sticker-size-for-printing', 'how-to-create-die-cut-white-borders'];
 
@@ -101,8 +101,9 @@ ${allPages
     res.type('text/plain');
     res.send(`User-agent: *
 Allow: /
+Allow: /google6fb636039de5c2e2.html
 Disallow: /api/
-Sitemap: https://stickermaker.app/sitemap.xml
+Sitemap: https://sticker-maker-online.vercel.app/sitemap.xml
 `);
   });
 

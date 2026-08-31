@@ -3,7 +3,7 @@ export default function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const baseUrl = 'https://stickermaker.app';
+  const baseUrl = 'https://sticker-maker-online.vercel.app';
   const categories = ['funny', 'aesthetic', 'logo', 'whatsapp', 'instagram', 'quotes', 'urdu'];
   const blogPosts = ['how-to-make-whatsapp-stickers', 'best-sticker-size-for-printing', 'how-to-create-die-cut-white-borders'];
 

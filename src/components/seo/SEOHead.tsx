@@ -7,7 +7,7 @@ interface SEOHeadProps {
   currentRoute: PageRoute;
 }
 
-const SITE_URL = 'https://stickermaker.app';
+const SITE_URL = 'https://sticker-maker-online.vercel.app';
 
 const getCanonicalUrl = (route: PageRoute) => {
   if (route.type === 'editor') return `${SITE_URL}/create/stickers`;
