@@ -87,6 +87,9 @@ export const SEOHead: React.FC<SEOHeadProps> = ({ currentRoute }) => {
       } else if (currentRoute.slug === 'photo-to-sticker') {
         title = 'Photo to Sticker Converter — Free Online Tool | StickerMaker';
         description = 'Turn any photo into a sticker for free with instant background removal, die-cut borders, and transparent PNG download in seconds.';
+      } else if (currentRoute.slug === 'meme-stickers') {
+        title = 'Meme Sticker Maker — Create Funny Stickers Free | StickerMaker';
+        description = 'Make funny meme stickers online for free. Keep your original background for authentic meme style, export instantly, and design custom WhatsApp-ready stickers without signup.';
       } else if (currentRoute.slug === 'custom-sticker-maker') {
         title = 'Custom Sticker Maker — Make Stickers from Your Photos';
         description = 'Create custom stickers online from photos, quotes, logos, and templates with no design experience required.';

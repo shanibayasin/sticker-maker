@@ -132,4 +132,4 @@ export type PageRoute =
   | { type: 'about' }
   | { type: 'privacy-policy' }
   | { type: 'terms' }
-  | { type: 'landing'; slug: 'sticker-maker' | 'free-sticker-maker' | 'whatsapp-sticker-maker' | 'photo-to-sticker' | 'custom-sticker-maker' };
+  | { type: 'landing'; slug: 'sticker-maker' | 'free-sticker-maker' | 'whatsapp-sticker-maker' | 'photo-to-sticker' | 'custom-sticker-maker' | 'meme-stickers' };

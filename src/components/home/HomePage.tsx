@@ -137,6 +137,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
               ))}
             </div>
+
+            <div className="pt-4 flex justify-center">
+              <button
+                onClick={() => onNavigate({ type: 'landing', slug: 'meme-stickers' })}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Meme Sticker Maker</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </section>

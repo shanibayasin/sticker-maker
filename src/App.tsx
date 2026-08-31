@@ -13,6 +13,7 @@ import { AboutPage } from './components/about/AboutPage';
 import { PrivacyPolicyPage } from './components/legal/PrivacyPolicyPage';
 import { TermsPage } from './components/legal/TermsPage';
 import { PhotoToStickerPage } from './components/photo-to-sticker/PhotoToStickerPage';
+import { MemeStickersPage } from './components/landing/MemeStickersPage';
 import { SEOHead } from './components/seo/SEOHead';
 
 export default function App() {
@@ -33,6 +34,9 @@ export default function App() {
     }
     if (path === '/photo-to-sticker') {
       return { type: 'landing', slug: 'photo-to-sticker' };
+    }
+    if (path === '/meme-stickers') {
+      return { type: 'landing', slug: 'meme-stickers' };
     }
     if (path.startsWith('/sticker-maker/')) {
       const cat = path.replace('/sticker-maker/', '') as StickerCategory;
@@ -107,6 +111,8 @@ export default function App() {
         setCurrentRoute({ type: 'landing', slug: 'whatsapp-sticker-maker' });
       } else if (path === '/photo-to-sticker') {
         setCurrentRoute({ type: 'landing', slug: 'photo-to-sticker' });
+      } else if (path === '/meme-stickers') {
+        setCurrentRoute({ type: 'landing', slug: 'meme-stickers' });
       } else if (path.startsWith('/sticker-maker/')) {
         const cat = path.replace('/sticker-maker/', '') as StickerCategory;
         setCurrentRoute({ type: 'category', category: cat });
@@ -156,6 +162,8 @@ export default function App() {
               <CategoryPage category="whatsapp" onNavigate={handleNavigate} />
             ) : currentRoute.type === 'landing' && currentRoute.slug === 'photo-to-sticker' ? (
               <PhotoToStickerPage onNavigate={handleNavigate} />
+            ) : currentRoute.type === 'landing' && currentRoute.slug === 'meme-stickers' ? (
+              <MemeStickersPage onNavigate={handleNavigate} />
             ) : (
               <HomePage onNavigate={handleNavigate} />
             )}
