@@ -176,7 +176,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="12"
                   max="84"
                   value={selectedElement.fontSize || 24}
-                  onChange={(e) => onUpdateSelected({ fontSize: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ fontSize: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
                 />
               </div>
@@ -309,7 +309,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   max="1"
                   step="0.05"
                   value={imageOpacity}
-                  onChange={(e) => onUpdateSelected({ opacity: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ opacity: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
                   style={{ touchAction: 'pan-y' }}
                 />
@@ -328,7 +328,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="20"
                   max="200"
                   value={brightness}
-                  onChange={(e) => onUpdateSelected({ filterBrightness: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ filterBrightness: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
                   style={{ touchAction: 'pan-y' }}
                 />
@@ -347,7 +347,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="20"
                   max="200"
                   value={contrast}
-                  onChange={(e) => onUpdateSelected({ filterContrast: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ filterContrast: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
                   style={{ touchAction: 'pan-y' }}
                 />
@@ -366,7 +366,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="0"
                   max="200"
                   value={saturation}
-                  onChange={(e) => onUpdateSelected({ filterSaturation: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ filterSaturation: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
                   style={{ touchAction: 'pan-y' }}
                 />
@@ -385,7 +385,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   min="0"
                   max="12"
                   value={blur}
-                  onChange={(e) => onUpdateSelected({ filterBlur: Number(e.target.value) })}
+                  onInput={(e) => onUpdateSelected({ filterBlur: Number(e.currentTarget.value) })}
                   className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer touch-pan-y"
                   style={{ touchAction: 'pan-y' }}
                 />
@@ -479,7 +479,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               min="-180"
               max="180"
               value={selectedElement.angle || 0}
-              onChange={(e) => onUpdateSelected({ angle: Number(e.target.value) })}
+              onInput={(e) => onUpdateSelected({ angle: Number(e.currentTarget.value) })}
               className="w-full accent-rose-500 h-1.5 bg-neutral-200 rounded-lg cursor-pointer"
             />
           </div>
