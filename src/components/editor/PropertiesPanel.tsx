@@ -63,10 +63,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onCloseMobile,
   isMobileModal = false,
 }) => {
-  const colors = [
-    '#000000', '#FFFFFF', '#F43F5E', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#78350F'
-  ];
-
+  const colors = ['#000000', '#FFFFFF', '#F43F5E', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#78350F'];
   const shapes = [
     { type: 'circle', label: 'Circle' },
     { type: 'rounded-rect', label: 'Rounded Rect' },
@@ -84,34 +81,37 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const blur = selectedElement?.filterBlur ?? 0;
 
   return (
-    <aside 
-      aria-label="Properties and Layers Panel" 
+    <aside
+      aria-label="Properties and Layers Panel"
       className={
         isMobileModal
-          ? "w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-neutral-200 flex flex-col"
-          : "w-72 bg-white border-l border-neutral-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none"
+          ? 'w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-neutral-200 flex flex-col'
+          : 'w-72 bg-white border-l border-neutral-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none'
       }
     >
-      {/* Top Header */}
       <div className="shrink-0">
         {isMobileModal && (
           <div className="mb-2 flex justify-center">
             <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
           </div>
         )}
+
         <div className="flex items-center justify-between pb-2 border-b border-neutral-150">
           <span className="font-extrabold text-xs uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-rose-500" />
             <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
           </span>
+
           <div className="flex items-center gap-2">
             {selectedElement && (
               <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md capitalize border border-rose-200">
                 {selectedElement.type}
               </span>
             )}
+
             {onCloseMobile && isMobileModal && (
               <button
+                type="button"
                 onClick={onCloseMobile}
                 className="p-1 text-neutral-400 hover:text-neutral-700 rounded-lg min-h-[32px] min-w-[32px] flex items-center justify-center"
                 title="Close Panel"
@@ -126,7 +126,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
       {selectedElement ? (
         <div className="flex-1 overflow-y-auto space-y-4 pr-1 -mr-1 pb-2">
-          {/* 1. TEXT PROPERTIES */}
           {selectedElement.type === 'text' && (
             <div className="space-y-3">
               <div className="space-y-1">
@@ -138,6 +137,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     </span>
                   )}
                 </div>
+
                 <textarea
                   value={selectedElement.content || ''}
                   onChange={(e) => onUpdateSelected({ content: e.target.value })}
@@ -150,7 +150,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Font Family */}
               <div className="space-y-1">
                 <span className="text-[11px] text-neutral-500 font-medium">Font Family</span>
                 <FontPicker
@@ -167,7 +166,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Font Size Slider */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Font Size</span>
@@ -183,15 +181,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Font Styling & Alignment */}
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-1 bg-neutral-50 p-1 rounded-lg border border-neutral-200">
                   <button
-                    onClick={() =>
-                      onUpdateSelected({
-                        fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold',
-                      })
-                    }
+                    type="button"
+                    onClick={() => onUpdateSelected({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
                     className={`p-1.5 rounded ${
                       selectedElement.fontWeight === 'bold'
                         ? 'bg-white text-rose-600 shadow-2xs font-bold'
@@ -202,11 +196,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     <Bold className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() =>
-                      onUpdateSelected({
-                        fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic',
-                      })
-                    }
+                    type="button"
+                    onClick={() => onUpdateSelected({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
                     className={`p-1.5 rounded ${
                       selectedElement.fontStyle === 'italic'
                         ? 'bg-white text-rose-600 shadow-2xs'
@@ -217,12 +208,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     <Italic className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() =>
-                      onUpdateSelected({
-                        textDecoration:
-                          selectedElement.textDecoration === 'underline' ? 'none' : 'underline',
-                      })
-                    }
+                    type="button"
+                    onClick={() => onUpdateSelected({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
                     className={`p-1.5 rounded ${
                       selectedElement.textDecoration === 'underline'
                         ? 'bg-white text-rose-600 shadow-2xs'
@@ -236,34 +223,25 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
                 <div className="flex items-center gap-1 bg-neutral-50 p-1 rounded-lg border border-neutral-200">
                   <button
+                    type="button"
                     onClick={() => onUpdateSelected({ textAlign: 'left' })}
-                    className={`p-1.5 rounded ${
-                      selectedElement.textAlign === 'left'
-                        ? 'bg-white text-rose-600 shadow-2xs'
-                        : 'text-neutral-600 hover:bg-neutral-200/60'
-                    }`}
+                    className={`p-1.5 rounded ${selectedElement.textAlign === 'left' ? 'bg-white text-rose-600 shadow-2xs' : 'text-neutral-600 hover:bg-neutral-200/60'}`}
                     title="Align Left"
                   >
                     <AlignLeft className="w-3.5 h-3.5" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => onUpdateSelected({ textAlign: 'center' })}
-                    className={`p-1.5 rounded ${
-                      !selectedElement.textAlign || selectedElement.textAlign === 'center'
-                        ? 'bg-white text-rose-600 shadow-2xs'
-                        : 'text-neutral-600 hover:bg-neutral-200/60'
-                    }`}
+                    className={`p-1.5 rounded ${!selectedElement.textAlign || selectedElement.textAlign === 'center' ? 'bg-white text-rose-600 shadow-2xs' : 'text-neutral-600 hover:bg-neutral-200/60'}`}
                     title="Align Center"
                   >
                     <AlignCenter className="w-3.5 h-3.5" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => onUpdateSelected({ textAlign: 'right' })}
-                    className={`p-1.5 rounded ${
-                      selectedElement.textAlign === 'right'
-                        ? 'bg-white text-rose-600 shadow-2xs'
-                        : 'text-neutral-600 hover:bg-neutral-200/60'
-                    }`}
+                    className={`p-1.5 rounded ${selectedElement.textAlign === 'right' ? 'bg-white text-rose-600 shadow-2xs' : 'text-neutral-600 hover:bg-neutral-200/60'}`}
                     title="Align Right"
                   >
                     <AlignRight className="w-3.5 h-3.5" />
@@ -273,10 +251,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
           )}
 
-          {/* 2. IMAGE FILTERS & ADJUSTMENTS */}
           {selectedElement.type === 'image' && (
             <div className="space-y-3">
-              {/* Replace Image Action */}
               {onReplaceImage && (
                 <button
                   type="button"
@@ -308,13 +284,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 </button>
               )}
 
-              {/* Opacity */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Opacity</span>
-                  <span className="font-bold text-neutral-800">
-                    {Math.round(imageOpacity * 100)}%
-                  </span>
+                  <span className="font-bold text-neutral-800">{Math.round(imageOpacity * 100)}%</span>
                 </div>
                 <input
                   type="range"
@@ -328,13 +301,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Brightness Filter */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Brightness</span>
-                  <span className="font-bold text-neutral-800">
-                    {brightness}%
-                  </span>
+                  <span className="font-bold text-neutral-800">{brightness}%</span>
                 </div>
                 <input
                   type="range"
@@ -347,13 +317,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Contrast Filter */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Contrast</span>
-                  <span className="font-bold text-neutral-800">
-                    {contrast}%
-                  </span>
+                  <span className="font-bold text-neutral-800">{contrast}%</span>
                 </div>
                 <input
                   type="range"
@@ -366,13 +333,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Saturation Filter */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Saturation</span>
-                  <span className="font-bold text-neutral-800">
-                    {saturation}%
-                  </span>
+                  <span className="font-bold text-neutral-800">{saturation}%</span>
                 </div>
                 <input
                   type="range"
@@ -385,13 +349,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Blur Filter */}
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-neutral-500">Blur Softness</span>
-                  <span className="font-bold text-neutral-800">
-                    {blur}px
-                  </span>
+                  <span className="font-bold text-neutral-800">{blur}px</span>
                 </div>
                 <input
                   type="range"
@@ -404,25 +365,22 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 />
               </div>
 
-              {/* Quick Flip */}
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <button
+                  type="button"
                   onClick={() => onUpdateSelected({ flipH: !selectedElement.flipH })}
                   className={`p-2 text-xs font-semibold rounded-xl border flex items-center justify-center gap-1.5 transition-colors ${
-                    selectedElement.flipH
-                      ? 'bg-rose-50 border-rose-300 text-rose-600'
-                      : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
+                    selectedElement.flipH ? 'bg-rose-50 border-rose-300 text-rose-600' : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                   }`}
                 >
                   <FlipHorizontal className="w-3.5 h-3.5" />
                   <span>Flip H</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => onUpdateSelected({ flipV: !selectedElement.flipV })}
                   className={`p-2 text-xs font-semibold rounded-xl border flex items-center justify-center gap-1.5 transition-colors ${
-                    selectedElement.flipV
-                      ? 'bg-rose-50 border-rose-300 text-rose-600'
-                      : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
+                    selectedElement.flipV ? 'bg-rose-50 border-rose-300 text-rose-600' : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                   }`}
                 >
                   <FlipVertical className="w-3.5 h-3.5" />
@@ -432,7 +390,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
           )}
 
-          {/* 3. SHAPE & BADGE CONTROLS */}
           {(selectedElement.type === 'shape' || selectedElement.type === 'badge') && (
             <div className="space-y-3">
               <div className="space-y-1">
@@ -441,11 +398,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   {shapes.map((s) => (
                     <button
                       key={s.type}
+                      type="button"
                       onClick={() => onUpdateSelected({ shapeType: s.type })}
                       className={`p-2 rounded-xl text-xs font-semibold border transition-all text-left truncate ${
-                        selectedElement.shapeType === s.type
-                          ? 'bg-rose-50 border-rose-300 text-rose-600 font-bold'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
+                        selectedElement.shapeType === s.type ? 'bg-rose-50 border-rose-300 text-rose-600 font-bold' : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
                       }`}
                     >
                       {s.label}
@@ -456,7 +412,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
           )}
 
-          {/* COLOR CONTROLS */}
           {selectedElement.type !== 'image' && (
             <div className="space-y-2 pt-2 border-t border-neutral-150">
               <span className="text-xs font-bold text-neutral-700">Fill Color</span>
@@ -464,10 +419,9 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 {colors.map((c) => (
                   <button
                     key={c}
+                    type="button"
                     onClick={() => onUpdateSelected({ fill: c })}
-                    className={`w-6 h-6 rounded-full border transition-transform ${
-                      selectedElement.fill === c ? 'ring-2 ring-rose-500 scale-110' : 'border-neutral-200'
-                    }`}
+                    className={`w-6 h-6 rounded-full border transition-transform ${selectedElement.fill === c ? 'ring-2 ring-rose-500 scale-110' : 'border-neutral-200'}`}
                     style={{ backgroundColor: c }}
                   />
                 ))}
@@ -481,7 +435,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             </div>
           )}
 
-          {/* ROTATION ANGLE */}
           <div className="space-y-1 pt-2 border-t border-neutral-150">
             <div className="flex justify-between text-[11px]">
               <span className="font-bold text-neutral-700">Rotation Angle</span>
@@ -497,44 +450,19 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             />
           </div>
 
-          {/* LAYER REORDERING */}
           <div className="space-y-2 pt-2 border-t border-neutral-150">
             <span className="text-xs font-bold text-neutral-700">Layer Hierarchy</span>
             <div className="grid grid-cols-4 gap-1.5 text-xs font-semibold">
-              <button
-                onClick={() => onLayerOrder('front')}
-                className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center"
-                title="Bring to Front"
-              >
-                Front
-              </button>
-              <button
-                onClick={() => onLayerOrder('up')}
-                className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center"
-                title="Forward (+1)"
-              >
-                +1
-              </button>
-              <button
-                onClick={() => onLayerOrder('down')}
-                className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center"
-                title="Backward (-1)"
-              >
-                -1
-              </button>
-              <button
-                onClick={() => onLayerOrder('back')}
-                className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center"
-                title="Send to Back"
-              >
-                Back
-              </button>
+              <button type="button" onClick={() => onLayerOrder('front')} className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center" title="Bring to Front">Front</button>
+              <button type="button" onClick={() => onLayerOrder('up')} className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center" title="Forward (+1)">+1</button>
+              <button type="button" onClick={() => onLayerOrder('down')} className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center" title="Backward (-1)">-1</button>
+              <button type="button" onClick={() => onLayerOrder('back')} className="p-2 bg-neutral-50 hover:bg-neutral-100 rounded-lg border border-neutral-200 text-center" title="Send to Back">Back</button>
             </div>
           </div>
 
-          {/* DUPLICATE & DELETE */}
           <div className="grid grid-cols-2 gap-2 pt-2">
             <button
+              type="button"
               onClick={onDuplicateSelected}
               className="flex items-center justify-center gap-1.5 p-2 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 rounded-xl border border-neutral-200 text-xs font-bold transition-colors"
             >
@@ -542,6 +470,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               <span>Duplicate</span>
             </button>
             <button
+              type="button"
               onClick={onDeleteSelected}
               className="flex items-center justify-center gap-1.5 p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl border border-rose-200 text-xs font-bold transition-colors"
             >
@@ -551,7 +480,6 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           </div>
         </div>
       ) : (
-        /* NO SELECTION: DISPLAY LAYER STACK & QUICK SETTINGS */
         <div className="space-y-4">
           <div className="space-y-2">
             <span className="text-xs font-bold text-neutral-700">Artwork Layers ({elements.length})</span>
@@ -573,9 +501,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                       ) : (
                         <Shapes className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
                       )}
-                      <span className="truncate font-semibold text-neutral-700">
-                        {elem.content || elem.shapeType || `${elem.type} layer`}
-                      </span>
+                      <span className="truncate font-semibold text-neutral-700">{elem.content || elem.shapeType || `${elem.type} layer`}</span>
                     </div>
                     <span className="text-[10px] text-neutral-400 shrink-0">#{elements.length - idx}</span>
                   </div>
@@ -584,10 +510,9 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             )}
           </div>
 
-          {/* Sticker Master Die-Cut Settings */}
           <div className="space-y-3 pt-3 border-t border-neutral-200">
             <span className="text-xs font-extrabold text-neutral-800">Master Die-Cut Outline</span>
-            
+
             <div className="bg-neutral-50 p-3 rounded-xl border border-neutral-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-semibold">
                 <span className="text-neutral-700">Border Thickness</span>
@@ -606,16 +531,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             <div className="flex items-center justify-between p-2.5 bg-neutral-50 rounded-xl border border-neutral-200">
               <span className="text-xs font-bold text-neutral-800">3D Vinyl Shadow</span>
               <button
+                type="button"
                 onClick={onHasShadowToggle}
-                className={`w-9 h-5 rounded-full transition-colors p-0.5 ${
-                  hasShadow ? 'bg-rose-500' : 'bg-neutral-300'
-                }`}
+                className={`w-9 h-5 rounded-full transition-colors p-0.5 ${hasShadow ? 'bg-rose-500' : 'bg-neutral-300'}`}
               >
-                <div
-                  className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                    hasShadow ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
+                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${hasShadow ? 'translate-x-4' : 'translate-x-0'}`} />
               </button>
             </div>
           </div>
