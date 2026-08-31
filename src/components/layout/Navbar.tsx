@@ -11,6 +11,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isMobileMenuOpen]);
+
   const categories: { slug: StickerCategory; label: string; badge?: string }[] = [
     { slug: 'whatsapp', label: 'WhatsApp Stickers', badge: 'Popular' },
     { slug: 'urdu', label: 'Urdu & Nastaliq', badge: 'Unique' },
@@ -173,12 +184,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
 
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-neutral-900/35 backdrop-blur-[1px]" onClick={() => setIsMobileMenuOpen(false)}>
+        <div className="md:hidden fixed inset-0 z-[70] bg-white" onClick={() => setIsMobileMenuOpen(false)}>
           <div
-            className="absolute right-0 top-0 h-full w-[86vw] max-w-sm bg-white shadow-2xl border-l border-neutral-200 animate-in slide-in-from-right-4 duration-200"
+            className="absolute right-0 top-16 h-[calc(100vh-4rem)] w-[86vw] max-w-sm bg-white shadow-2xl border-l border-neutral-200 overflow-y-auto animate-in slide-in-from-right-4 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 p-0.5">
                   <div className="w-full h-full rounded-[10px] bg-white flex items-center justify-center">
@@ -225,7 +236,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
                     setIsMobileMenuOpen(false);
                     onNavigate({ type: 'templates' });
                   }}
-                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-rose-600 bg-rose-50/60 font-semibold"
+                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-rose-600 bg-rose-50 font-semibold"
                 >
                   <Sparkles className="w-4 h-4 text-rose-500" />
                   <span>Browse All Templates</span>
