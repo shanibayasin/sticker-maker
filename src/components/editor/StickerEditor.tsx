@@ -53,7 +53,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   onNavigate 
 }) => {
   // Active left sidebar tab & responsive drawer
-  const [activeTab, setActiveTab] = useState<'templates' | 'text' | 'uploads' | 'elements' | 'border' | 'pack'>('border');
+  const [activeTab, setActiveTab] = useState<'border' | 'ai' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack'>('border');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState<boolean>(false);
   const [isPropertiesOpenMobile, setIsPropertiesOpenMobile] = useState<boolean>(false);
   const [mobileSheetHeight, setMobileSheetHeight] = useState<number>(62);
@@ -1317,44 +1317,51 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const effectiveCanvasScale = viewportWidth < 768 ? Math.min(zoomLevel, mobileCanvasScale) : zoomLevel;
 
   return (
-    <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-neutral-100 select-none">
+    <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-[#eef2f7] select-none">
       {/* 1. TOP HEADER STUDIO CONTROLS BAR */}
       <header 
         aria-label="Editor Header" 
-        className="min-h-[56px] bg-white border-b border-neutral-200 px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0"
+        className="min-h-[58px] border-b border-slate-700 bg-[#101827] px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0 shadow-[0_1px_0_rgba(255,255,255,0.04)]"
       >
         {/* Left: Home Navigation & Project Name */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => onNavigate({ type: 'home' })}
-            className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-600 transition-colors"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-left transition-all hover:border-rose-400/60 hover:bg-white/10"
             title="Back to Home"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-amber-400 text-white shadow-sm ring-2 ring-white/10">
+              <Scissors className="h-4 w-4 -rotate-45" />
+            </div>
+            <div className="hidden sm:block">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Studio</div>
+              <div className="text-sm font-extrabold text-white">StickerMaker</div>
+            </div>
           </button>
+
+          <nav className="hidden md:flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-xs font-semibold text-slate-300">
+            <button onClick={() => onNavigate({ type: 'editor' })} className="rounded-lg bg-white px-3 py-1.5 text-slate-900 shadow-sm">Create</button>
+            <button onClick={() => onNavigate({ type: 'templates' })} className="rounded-lg px-3 py-1.5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors">Templates</button>
+            <button onClick={() => onNavigate({ type: 'templates' })} className="rounded-lg px-3 py-1.5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors">My Designs</button>
+            <button onClick={() => onNavigate({ type: 'pricing' })} className="rounded-lg px-3 py-1.5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors">Pricing</button>
+            <button onClick={() => onNavigate({ type: 'about' })} className="rounded-lg px-3 py-1.5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors">Help</button>
+          </nav>
 
           {/* Mobile Sidebar Toggle Button */}
           <button
             onClick={() => setIsSidebarOpenMobile(!isSidebarOpenMobile)}
-            className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-600 sm:hidden"
+            className="p-2 rounded-lg hover:bg-white/5 text-slate-300 md:hidden"
             title="Toggle Drawer"
           >
             <Menu className="w-4 h-4" />
           </button>
 
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-sm text-neutral-900 hidden xs:inline">Custom Sticker</span>
-            <span className="text-[10px] font-bold bg-rose-50 text-rose-600 px-2 py-0.5 rounded border border-rose-200">
-              Live Die-Cut
-            </span>
-          </div>
-
           {/* Undo / Redo with Keyboard Tooltips */}
-          <div className="flex items-center gap-1 border-l border-neutral-200 pl-3">
+          <div className="flex items-center gap-1 border-l border-white/10 pl-3">
             <button
               onClick={handleUndo}
               disabled={historyIndex <= 0}
-              className="p-1.5 rounded-lg text-neutral-600 hover:bg-neutral-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+              className="p-1.5 rounded-lg text-slate-300 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
               title="Undo (Ctrl+Z)"
             >
               <Undo2 className="w-4 h-4" />
@@ -1362,7 +1369,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             <button
               onClick={handleRedo}
               disabled={historyIndex >= history.length - 1}
-              className="p-1.5 rounded-lg text-neutral-600 hover:bg-neutral-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+              className="p-1.5 rounded-lg text-slate-300 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
               title="Redo (Ctrl+Y)"
             >
               <Redo2 className="w-4 h-4" />
@@ -1371,11 +1378,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         </div>
 
         {/* Center: Canvas Size Presets */}
-        <div className="hidden md:flex items-center gap-1.5 bg-neutral-100 p-1 rounded-xl">
+        <div className="hidden md:flex items-center gap-1.5 bg-white/5 p-1 rounded-xl border border-white/10">
           <button
             onClick={() => setCanvasSize({ width: 512, height: 512, name: 'WhatsApp (512x512)' })}
             className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-              canvasSize.width === 512 ? 'bg-white text-rose-600 shadow-2xs font-bold' : 'text-neutral-600 hover:text-neutral-900'
+              canvasSize.width === 512 ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'
             }`}
           >
             WhatsApp (512px)
@@ -1383,7 +1390,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <button
             onClick={() => setCanvasSize({ width: 600, height: 600, name: 'Square (600x600)' })}
             className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-              canvasSize.width === 600 ? 'bg-white text-rose-600 shadow-2xs font-bold' : 'text-neutral-600 hover:text-neutral-900'
+              canvasSize.width === 600 ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'
             }`}
           >
             Square (600px)
@@ -1391,7 +1398,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <button
             onClick={() => setCanvasSize({ width: 720, height: 720, name: '300 DPI Print (720px)' })}
             className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-              canvasSize.width === 720 ? 'bg-white text-rose-600 shadow-2xs font-bold' : 'text-neutral-600 hover:text-neutral-900'
+              canvasSize.width === 720 ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'
             }`}
           >
             300 DPI Vinyl
@@ -1403,35 +1410,35 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <button
             id="editor-order-prints-btn"
             onClick={() => setShowOrderModal(true)}
-            className="hidden sm:inline-flex items-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition-all shadow-xs"
+            className="hidden sm:inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition-all shadow-xs border border-white/10"
           >
             <ShoppingBag className="w-3.5 h-3.5 text-amber-400" />
             <span>Order Prints</span>
           </button>
 
           <button
-            id="editor-copy-btn"
-            onClick={() => void triggerExport('copy-clipboard')}
-            title="Copy sticker to clipboard"
-            className="inline-flex flex-shrink-0 items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-xl shadow-md ring-2 ring-rose-200 hover:shadow-lg transition-all"
+            id="editor-save-btn"
+            onClick={() => setShowExportModal(true)}
+            className="inline-flex flex-shrink-0 items-center gap-1.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-xl shadow-lg shadow-rose-500/20 transition-all"
           >
-            <Copy className="w-4 h-4" />
-            <span>Copy Sticker</span>
+            <Download className="w-4 h-4" />
+            <span>Save / Export</span>
           </button>
 
           <button
-            id="editor-download-btn"
-            onClick={() => setShowExportModal(true)}
-            className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-100 text-neutral-800 text-xs font-bold px-3 sm:px-4 py-2 rounded-xl border border-neutral-200 shadow-xs hover:shadow-md transition-all"
+            id="editor-copy-btn"
+            onClick={() => void triggerExport('copy-clipboard')}
+            title="Copy sticker to clipboard"
+            className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-xl border border-white/10 shadow-xs transition-all"
           >
-            <Download className="w-4 h-4 text-neutral-600" />
-            <span>Download</span>
+            <Copy className="w-4 h-4 text-slate-200" />
+            <span>Share</span>
           </button>
         </div>
       </header>
 
       {/* 2. MAIN 3-COLUMN STUDIO WORKSPACE */}
-      <div className="flex-1 flex overflow-hidden relative pb-16 md:pb-0">
+      <div className="flex-1 flex overflow-hidden relative pb-16 md:pb-0 bg-[#eef2f7]">
         {/* DESKTOP LEFT COLUMN: Sidebar Navigation & Content Drawer */}
         <div className="hidden md:flex h-full">
           <TemplateSidebar

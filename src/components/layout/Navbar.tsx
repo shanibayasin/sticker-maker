@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageRoute, StickerCategory } from '../../types/sticker';
-import { Sparkles, Scissors, ChevronDown, BookOpen, Tag, Info, ArrowRight, X, Menu } from 'lucide-react';
+import { Sparkles, Scissors, BookOpen, Tag, Info, Download, X, Menu } from 'lucide-react';
 
 interface NavbarProps {
   currentRoute: PageRoute;
@@ -63,70 +63,34 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-neutral-600">
             <button
+              id="nav-create-link"
+              onClick={() => onNavigate({ type: 'editor' })}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] ${
+                currentRoute.type === 'editor' ? 'text-rose-600 bg-rose-50 font-semibold' : 'hover:text-neutral-900 hover:bg-neutral-100'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-rose-500" />
+              <span>Create</span>
+            </button>
+
+            <button
               id="nav-templates-link"
               onClick={() => onNavigate({ type: 'templates' })}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] ${
                 currentRoute.type === 'templates' ? 'text-rose-600 bg-rose-50 font-semibold' : 'hover:text-neutral-900 hover:bg-neutral-100'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-rose-500" />
+              <Scissors className="w-4 h-4 text-rose-500" />
               <span>Templates</span>
             </button>
 
-            {/* Category Dropdown */}
-            <div className="relative">
-              <button
-                id="nav-categories-dropdown-btn"
-                onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
-                onBlur={() => setTimeout(() => setIsCategoryMenuOpen(false), 200)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] ${
-                  currentRoute.type === 'category' ? 'text-rose-600 bg-rose-50 font-semibold' : 'hover:text-neutral-900 hover:bg-neutral-100'
-                }`}
-              >
-                <span>Categories</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isCategoryMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isCategoryMenuOpen && (
-                <div className="absolute top-full left-0 mt-1.5 w-64 bg-white rounded-2xl shadow-xl border border-neutral-200 p-2 py-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider px-3 py-1 mb-1">
-                    Sticker Collections
-                  </div>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.slug}
-                      id={`nav-cat-link-${cat.slug}`}
-                      onClick={() => {
-                        setIsCategoryMenuOpen(false);
-                        onNavigate({ type: 'category', category: cat.slug });
-                      }}
-                      className="w-full flex items-center justify-between px-3 py-2 text-left text-sm rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
-                    >
-                      <span className="font-medium text-neutral-800">{cat.label}</span>
-                      {cat.badge && (
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                          cat.badge === 'Unique' 
-                            ? 'bg-emerald-100 text-emerald-800' 
-                            : 'bg-rose-100 text-rose-700'
-                        }`}>
-                          {cat.badge}
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
             <button
-              id="nav-blog-link"
-              onClick={() => onNavigate({ type: 'blog' })}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] ${
-                currentRoute.type === 'blog' || currentRoute.type === 'blog-post' ? 'text-rose-600 bg-rose-50 font-semibold' : 'hover:text-neutral-900 hover:bg-neutral-100'
-              }`}
+              id="nav-designs-link"
+              onClick={() => onNavigate({ type: 'templates' })}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] hover:text-neutral-900 hover:bg-neutral-100"
             >
-              <BookOpen className="w-4 h-4" />
-              <span>Guides & Sizing</span>
+              <BookOpen className="w-4 h-4 text-rose-500" />
+              <span>My Designs</span>
             </button>
 
             <button
@@ -141,28 +105,25 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
             </button>
 
             <button
-              id="nav-about-link"
+              id="nav-help-link"
               onClick={() => onNavigate({ type: 'about' })}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-colors min-h-[40px] ${
                 currentRoute.type === 'about' ? 'text-rose-600 bg-rose-50 font-semibold' : 'hover:text-neutral-900 hover:bg-neutral-100'
               }`}
             >
               <Info className="w-4 h-4" />
-              <span>About</span>
+              <span>Help</span>
             </button>
           </nav>
 
-          {/* Primary CTA button to Editor */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               id="nav-start-editor-btn"
               onClick={() => onNavigate({ type: 'editor' })}
               className="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2.5 rounded-xl shadow-xs hover:shadow transition-all min-h-[40px]"
             >
-              <Sparkles className="w-4 h-4" />
-              <span className="hidden xs:inline">Create a Sticker</span>
-              <span className="xs:hidden">Editor</span>
-              <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
+              <Download className="w-4 h-4" />
+              <span>Save / Export</span>
             </button>
 
             {/* Mobile menu toggle */}

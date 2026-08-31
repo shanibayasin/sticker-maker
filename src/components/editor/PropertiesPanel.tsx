@@ -85,8 +85,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       aria-label="Properties and Layers Panel"
       className={
         isMobileModal
-          ? 'w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-neutral-200 flex flex-col'
-          : 'w-72 bg-white border-l border-neutral-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none'
+          ? 'w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-slate-200 flex flex-col'
+          : 'w-72 bg-[#f8fafc] border-l border-slate-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none shadow-[inset_1px_0_0_rgba(15,23,42,0.04)]'
       }
     >
       <div className="shrink-0">
@@ -96,8 +96,8 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           </div>
         )}
 
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-150">
-          <span className="font-extrabold text-xs uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+          <span className="font-extrabold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-rose-500" />
             <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
           </span>

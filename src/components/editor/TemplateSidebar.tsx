@@ -18,8 +18,8 @@ import { StickerCategory, StickerTemplate, ClipartItem } from '../../types/stick
 import { STICKER_TEMPLATES, CLIPART_ELEMENTS } from '../../data/templatesData';
 
 interface TemplateSidebarProps {
-  activeTab: 'border' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack';
-  onTabChange: (tab: 'border' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack') => void;
+  activeTab: 'border' | 'ai' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack';
+  onTabChange: (tab: 'border' | 'ai' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack') => void;
   borderWidth: number;
   onBorderWidthChange: (width: number) => void;
   borderColor: string;
@@ -69,6 +69,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<StickerCategory | 'all'>('all');
+  const [aiPrompt, setAiPrompt] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -99,6 +100,16 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
     { id: 'urdu', label: 'Urdu نستعلیق' },
   ];
 
+  const aiSuggestions = STICKER_TEMPLATES.filter((tmpl) => {
+    if (!aiPrompt.trim()) return ['funny', 'whatsapp', 'urdu', 'quotes'].includes(tmpl.category);
+    const query = aiPrompt.toLowerCase();
+    return (
+      tmpl.title.toLowerCase().includes(query) ||
+      tmpl.category.toLowerCase().includes(query) ||
+      tmpl.description?.toLowerCase().includes(query)
+    );
+  }).slice(0, 6);
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
@@ -116,7 +127,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
   return (
     <aside 
       aria-label="Editor Sidebar" 
-      className={`bg-white border-r border-neutral-200 flex flex-col shrink-0 z-30 transition-all duration-200 ${
+      className={`bg-[#f8fafc] border-r border-slate-200 flex flex-col shrink-0 z-30 transition-all duration-200 shadow-[inset_-1px_0_0_rgba(15,23,42,0.05)] ${
         isCollapsed ? 'hidden md:flex md:w-16' : 'w-full sm:w-80 md:w-84'
       }`}
     >
@@ -140,22 +151,33 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
       )}
 
       {/* Navigation Tab Icons Strip */}
-      <div className="grid grid-cols-6 border-b border-neutral-200 p-1 bg-neutral-50 text-neutral-600 shrink-0">
+      <div className="grid grid-cols-7 border-b border-slate-200 p-1 bg-slate-100/80 text-slate-600 shrink-0 backdrop-blur-sm">
         <button
-          onClick={() => onTabChange('border')}
+          onClick={() => onTabChange('uploads')}
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'border' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
+            activeTab === 'uploads' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
           }`}
-          title="Die-Cut Border"
+          title="Upload"
         >
-          <Scissors className="w-4 h-4" />
-          <span className="hidden sm:inline">Die-Cut</span>
+          <Upload className="w-4 h-4" />
+          <span className="hidden sm:inline">Upload</span>
+        </button>
+
+        <button
+          onClick={() => onTabChange('ai')}
+          className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
+            activeTab === 'ai' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
+          }`}
+          title="AI Sticker Generator"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span className="hidden sm:inline">AI</span>
         </button>
 
         <button
           onClick={() => onTabChange('templates')}
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'templates' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
+            activeTab === 'templates' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
           }`}
           title="Templates"
         >
@@ -164,9 +186,20 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         </button>
 
         <button
+          onClick={() => onTabChange('border')}
+          className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
+            activeTab === 'border' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
+          }`}
+          title="Background & Border"
+        >
+          <Scissors className="w-4 h-4" />
+          <span className="hidden sm:inline">Border</span>
+        </button>
+
+        <button
           onClick={() => onTabChange('text')}
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'text' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
+            activeTab === 'text' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
           }`}
           title="Text"
         >
@@ -175,20 +208,9 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         </button>
 
         <button
-          onClick={() => onTabChange('uploads')}
-          className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'uploads' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
-          }`}
-          title="Uploads & Cutout"
-        >
-          <ImageIcon className="w-4 h-4" />
-          <span className="hidden sm:inline">Upload</span>
-        </button>
-
-        <button
           onClick={() => onTabChange('elements')}
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'elements' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
+            activeTab === 'elements' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
           }`}
           title="Clipart & Shapes"
         >
@@ -199,7 +221,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
         <button
           onClick={() => onTabChange('pack')}
           className={`p-2 rounded-xl flex flex-col items-center gap-1 text-[10px] font-bold transition-all min-h-[44px] justify-center ${
-            activeTab === 'pack' ? 'bg-white text-rose-600 shadow-2xs' : 'hover:bg-neutral-100'
+            activeTab === 'pack' ? 'bg-white text-rose-600 shadow-[0_4px_12px_rgba(15,23,42,0.08)] ring-1 ring-rose-100' : 'hover:bg-slate-200/80'
           }`}
           title="Sticker Pack Mode"
         >
@@ -210,7 +232,90 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
 
       {/* Main Drawer Body */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* 1. DIE-CUT BORDER TAB */}
+        {/* 1. AI STICKER TAB */}
+        {activeTab === 'ai' && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-extrabold text-sm text-neutral-900 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-rose-500" />
+                <span>AI Sticker Generator</span>
+              </h3>
+              <p className="text-xs text-neutral-500 mt-0.5">Describe your sticker concept and load a real template idea from the studio library.</p>
+            </div>
+
+            <div className="space-y-2.5">
+              <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">Prompt</label>
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                rows={4}
+                placeholder="Design a funny cat meme sticker with bold red text, comic energy, and clean die-cut white border"
+                className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm text-neutral-700 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">Example prompts</span>
+              <div className="flex flex-wrap gap-2">
+                {['Funny cat meme', 'Chai time quote', 'Motivational quote', 'Urdu calligraphy', 'Aesthetic floral', 'Instagram story badge'].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => setAiPrompt(prompt)}
+                    className="rounded-full border border-neutral-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-neutral-600 hover:border-rose-300 hover:text-rose-600 transition-colors"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-2.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500">Style</p>
+                <p className="mt-1 text-sm font-semibold text-neutral-800">Bold Comic</p>
+              </div>
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-2.5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500">Quantity</p>
+                <p className="mt-1 text-sm font-semibold text-neutral-800">4 results</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (aiSuggestions.length > 0) onSelectTemplate(aiSuggestions[0]);
+              }}
+              className="w-full rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-rose-600"
+            >
+              Generate Sticker Ideas
+            </button>
+
+            <div className="space-y-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">Results</span>
+              <div className="grid grid-cols-2 gap-2.5">
+                {aiSuggestions.map((tmpl) => (
+                  <button
+                    key={tmpl.id}
+                    type="button"
+                    onClick={() => onSelectTemplate(tmpl)}
+                    className="overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                  >
+                    <div className="aspect-square overflow-hidden border-b border-neutral-200 bg-white">
+                      <img src={tmpl.thumbnail} alt={tmpl.title} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="space-y-0.5 p-2">
+                      <p className="line-clamp-2 text-[11px] font-bold text-neutral-800">{tmpl.title}</p>
+                      <span className="text-[10px] text-neutral-500 capitalize">{tmpl.category}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. DIE-CUT BORDER TAB */}
         {activeTab === 'border' && (
           <div className="space-y-5">
             <div>
@@ -333,7 +438,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </div>
         )}
 
-        {/* 2. TEMPLATES TAB */}
+        {/* 3. TEMPLATES TAB */}
         {activeTab === 'templates' && (
           <div className="space-y-4">
             <div>
@@ -404,7 +509,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </div>
         )}
 
-        {/* 3. TEXT TAB */}
+        {/* 4. TEXT TAB */}
         {activeTab === 'text' && (
           <div className="space-y-4">
             <div>
@@ -444,7 +549,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </div>
         )}
 
-        {/* 4. UPLOADS & AI BG REMOVER TAB */}
+        {/* 5. UPLOADS & AI BG REMOVER TAB */}
         {activeTab === 'uploads' && (
           <div className="space-y-4">
             <div>
@@ -502,7 +607,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </div>
         )}
 
-        {/* 5. ELEMENTS & CLIPART TAB */}
+        {/* 6. ELEMENTS & CLIPART TAB */}
         {activeTab === 'elements' && (
           <div className="space-y-4">
             <div>
@@ -554,7 +659,7 @@ export const TemplateSidebar: React.FC<TemplateSidebarProps> = ({
           </div>
         )}
 
-        {/* 6. STICKER PACK MODE */}
+        {/* 7. STICKER PACK MODE */}
         {activeTab === 'pack' && (
           <div className="space-y-4">
             <div>
