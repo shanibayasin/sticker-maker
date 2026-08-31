@@ -37,6 +37,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [previewTemplate, setPreviewTemplate] = useState<StickerTemplate | null>(null);
   const [faqSearchQuery, setFaqSearchQuery] = useState('');
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(0);
+  const [heroBorderWidth, setHeroBorderWidth] = useState<number>(10);
+
+  const heroPreviewTemplate = STICKER_TEMPLATES.find((template) => template.id === 'tmpl-funny-doge') ?? STICKER_TEMPLATES[0];
 
   // Icon mapper for feature blocks
   const getFeatureIcon = (name: string) => {
@@ -89,64 +92,132 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     <div className="w-full flex flex-col items-center">
       {/* 1. HERO SECTION */}
       <section className="w-full bg-linear-to-b from-rose-50/70 via-white to-white pt-12 sm:pt-16 pb-16 sm:pb-20 border-b border-neutral-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-6 max-w-3xl mx-auto">
-            {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100/90 border border-rose-200/80 text-rose-700 text-xs font-semibold shadow-2xs">
-              <Zap className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-              <span>#1 Free Alternative to Canva Sticker Maker</span>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="lg:grid lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-12">
+            <div className="space-y-6 max-w-2xl lg:max-w-none text-left">
+              {/* Trust Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100/90 border border-rose-200/80 text-rose-700 text-xs font-semibold shadow-2xs">
+                <Zap className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                <span>#1 Free Alternative to Canva Sticker Maker</span>
+              </div>
+
+              {/* Exact H1 Title */}
+              <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-900 leading-[1.08]">
+                Sticker Maker — Design Custom Stickers <span className="text-rose-500">Free in Seconds</span>
+              </h1>
+
+              {/* Subheadline */}
+              <p className="text-sm sm:text-base lg:text-lg text-neutral-600 leading-relaxed max-w-xl lg:max-w-none">
+                {HERO_COPY.subheadline}
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch justify-start gap-3 pt-2 w-full max-w-xl">
+                <button
+                  id="hero-primary-cta-btn"
+                  onClick={() => onNavigate({ type: 'editor' })}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-bold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-sm hover:shadow-md transition-all min-h-12"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span>{HERO_COPY.primaryCta}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  id="hero-secondary-cta-btn"
+                  onClick={() => onNavigate({ type: 'landing', slug: 'photo-to-sticker' })}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-rose-50 text-rose-700 font-bold text-sm sm:text-base px-7 py-3.5 rounded-xl border border-rose-300 hover:border-rose-400 transition-all shadow-2xs min-h-12"
+                >
+                  <span>Photo to Sticker</span>
+                </button>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  onClick={() => onNavigate({ type: 'landing', slug: 'meme-stickers' })}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-rose-700 hover:text-rose-800 transition-colors"
+                >
+                  <span>Making a meme? Try our dedicated Meme Sticker Maker</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Key Trust Signals (2x2 grid on mobile, 4 columns on tablet+) */}
+              <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 border-t border-neutral-200/90 max-w-xl lg:max-w-none text-left">
+                {HERO_COPY.trustMetrics.map((metric, idx) => (
+                  <div key={idx} className="p-2 sm:p-0">
+                    <p className="text-xl sm:text-2xl font-extrabold text-neutral-900">{metric.value}</p>
+                    <p className="text-xs text-neutral-500 font-medium">{metric.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Exact H1 Title */}
-            <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-neutral-900 leading-[1.08]">
-              Sticker Maker — Design Custom Stickers <span className="text-rose-500">Free in Seconds</span>
-            </h1>
-
-            {/* Subheadline */}
-            <p className="text-sm sm:text-base lg:text-lg text-neutral-600 leading-relaxed max-w-2xl mx-auto">
-              {HERO_COPY.subheadline}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 w-full">
-              <button
-                id="hero-primary-cta-btn"
-                onClick={() => onNavigate({ type: 'editor' })}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-bold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-sm hover:shadow-md transition-all min-h-12"
-              >
-                <Sparkles className="w-5 h-5" />
-                <span>{HERO_COPY.primaryCta}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <button
-                id="hero-secondary-cta-btn"
-                onClick={() => onNavigate({ type: 'landing', slug: 'photo-to-sticker' })}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-neutral-50 text-neutral-800 font-semibold text-sm sm:text-base px-7 py-3.5 rounded-xl border border-neutral-300 hover:border-neutral-400 transition-all shadow-2xs min-h-12"
-              >
-                <span>Photo to Sticker</span>
-              </button>
-            </div>
-
-            {/* Key Trust Signals (2x2 grid on mobile, 4 columns on tablet+) */}
-            <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 border-t border-neutral-200/90 max-w-2xl mx-auto text-center">
-              {HERO_COPY.trustMetrics.map((metric, idx) => (
-                <div key={idx} className="p-2 sm:p-0">
-                  <p className="text-xl sm:text-2xl font-extrabold text-neutral-900">{metric.value}</p>
-                  <p className="text-xs text-neutral-500 font-medium">{metric.label}</p>
+            <div className="mt-10 lg:mt-0">
+              <div className="mx-auto max-w-[520px] rounded-[30px] border border-rose-100 bg-white p-4 sm:p-5 shadow-[0_25px_80px_rgba(244,63,94,0.10)] ring-1 ring-white/80">
+                <div className="flex items-center justify-between gap-3 pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.12)]" />
+                    <span className="text-sm font-bold text-neutral-900">Live Die-Cut Preview</span>
+                  </div>
+                  <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-rose-600">
+                    Real-time
+                  </span>
                 </div>
-              ))}
-            </div>
 
-            <div className="pt-4 flex justify-center">
-              <button
-                onClick={() => onNavigate({ type: 'landing', slug: 'meme-stickers' })}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700 transition hover:bg-rose-100"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Meme Sticker Maker</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                <div className="rounded-[24px] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-rose-50 p-4 shadow-inner shadow-emerald-100/40">
+                  <div className="aspect-[4/3] rounded-[20px] bg-white/70 flex items-center justify-center border border-white/70 shadow-sm">
+                    <StickerDieCutGraphic
+                      template={{
+                        ...heroPreviewTemplate,
+                        borderWidth: heroBorderWidth,
+                        borderColor: '#FFFFFF',
+                      }}
+                      size={220}
+                      className="drop-shadow-[0_16px_28px_rgba(15,23,42,0.12)]"
+                    />
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      {['#F8FAFC', '#F9A8D4', '#86EFAC', '#FDE68A'].map((swatch) => (
+                        <span
+                          key={swatch}
+                          className="h-6 w-6 rounded-full border border-neutral-200 shadow-2xs"
+                          style={{ backgroundColor: swatch }}
+                        />
+                      ))}
+                    </div>
+                    <span className="rounded-full border border-neutral-200 bg-white px-2.5 py-1 text-[10px] font-bold text-neutral-700">
+                      {heroBorderWidth}px border
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <label htmlFor="hero-border-slider" className="text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-500">
+                      Border thickness
+                    </label>
+                    <input
+                      id="hero-border-slider"
+                      type="range"
+                      min={4}
+                      max={20}
+                      step={1}
+                      value={heroBorderWidth}
+                      onChange={(e) => setHeroBorderWidth(Number(e.target.value))}
+                      className="w-full accent-rose-500"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => onNavigate({ type: 'editor' })}
+                    className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-neutral-900 text-white px-4 py-3 text-sm font-bold transition hover:bg-neutral-800"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Open Full Canvas Studio</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
