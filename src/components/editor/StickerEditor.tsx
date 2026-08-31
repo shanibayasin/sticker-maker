@@ -1299,7 +1299,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <button
             id="editor-copy-btn"
             onClick={() => void triggerExport('copy-clipboard')}
-            className="inline-flex items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs hover:shadow-md transition-all"
+            title="Copy sticker to clipboard"
+            className="inline-flex flex-shrink-0 items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md ring-2 ring-rose-200 hover:shadow-lg transition-all"
           >
             <Copy className="w-4 h-4" />
             <span>Copy Sticker</span>
