@@ -180,14 +180,14 @@ export const TemplatesPage: React.FC<TemplatesPageProps> = ({
               </div>
 
               {/* Sort Selector */}
-              <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-neutral-200 shadow-2xs self-start sm:self-auto">
-                <span className="text-[11px] font-semibold text-neutral-400 pl-2 pr-1 flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-xl border border-neutral-200 shadow-2xs self-start sm:self-auto w-full sm:w-auto overflow-x-auto no-scrollbar">
+                <span className="text-[11px] font-semibold text-neutral-400 pl-2 pr-1 flex items-center gap-1 shrink-0">
                   <SlidersHorizontal className="w-3 h-3" />
                   <span>Sort:</span>
                 </span>
                 <button
                   onClick={() => handleSortChange('popular')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] shrink-0 ${
                     sortBy === 'popular'
                       ? 'bg-neutral-900 text-white shadow-2xs'
                       : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
@@ -198,7 +198,7 @@ export const TemplatesPage: React.FC<TemplatesPageProps> = ({
                 </button>
                 <button
                   onClick={() => handleSortChange('trending')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] shrink-0 ${
                     sortBy === 'trending'
                       ? 'bg-neutral-900 text-white shadow-2xs'
                       : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
@@ -209,7 +209,7 @@ export const TemplatesPage: React.FC<TemplatesPageProps> = ({
                 </button>
                 <button
                   onClick={() => handleSortChange('newest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 min-h-[34px] shrink-0 ${
                     sortBy === 'newest'
                       ? 'bg-neutral-900 text-white shadow-2xs'
                       : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'
