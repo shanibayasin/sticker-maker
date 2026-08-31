@@ -131,6 +131,14 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  useEffect(() => {
+    const gtag = (window as any).gtag;
+    if (typeof gtag !== 'function') return;
+
+    const pagePath = `${window.location.pathname}${window.location.search}`;
+    gtag('config', 'G-CBG6YSRTZ4', { page_path: pagePath });
+  }, [currentRoute]);
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-neutral-900 font-sans selection:bg-rose-500 selection:text-white">
       {/* Dynamic SEO Meta Updates */}
