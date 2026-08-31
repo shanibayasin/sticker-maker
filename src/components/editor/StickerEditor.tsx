@@ -76,6 +76,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const [history, setHistory] = useState<CanvasElement[][]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1280);
 
   // Background removal modal state
   const [bgModalOpen, setBgModalOpen] = useState<boolean>(false);
@@ -111,6 +112,19 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     const timer = window.setTimeout(() => setCopyToast(null), 2200);
     return () => window.clearTimeout(timer);
   }, [copyToast]);
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (selectedId && viewportWidth < 768) {
+      setIsPropertiesOpenMobile(true);
+    }
+  }, [selectedId, viewportWidth]);
 
   // Pre-load fonts for any active text elements
   useEffect(() => {
@@ -1203,12 +1217,17 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     return canvasRef.current.getBoundingClientRect();
   };
 
+  const mobileCanvasScale = viewportWidth < 768
+    ? Math.min(1, Math.max(0.55, (viewportWidth - 72) / Math.max(canvasSize.width, 220)))
+    : 1;
+  const effectiveCanvasScale = viewportWidth < 768 ? Math.min(zoomLevel, mobileCanvasScale) : zoomLevel;
+
   return (
     <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-neutral-100 select-none">
       {/* 1. TOP HEADER STUDIO CONTROLS BAR */}
       <header 
         aria-label="Editor Header" 
-        className="h-14 bg-white border-b border-neutral-200 px-4 flex items-center justify-between z-30 shrink-0"
+        className="min-h-[56px] bg-white border-b border-neutral-200 px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0"
       >
         {/* Left: Home Navigation & Project Name */}
         <div className="flex items-center gap-3">
@@ -1286,7 +1305,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         </div>
 
         {/* Right: Copy Primary Action & Order Printed Stickers */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 max-w-full overflow-x-auto no-scrollbar ml-auto">
           <button
             id="editor-order-prints-btn"
             onClick={() => setShowOrderModal(true)}
@@ -1300,7 +1319,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             id="editor-copy-btn"
             onClick={() => void triggerExport('copy-clipboard')}
             title="Copy sticker to clipboard"
-            className="inline-flex flex-shrink-0 items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md ring-2 ring-rose-200 hover:shadow-lg transition-all"
+            className="inline-flex flex-shrink-0 items-center gap-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-3 sm:px-4 py-2 rounded-xl shadow-md ring-2 ring-rose-200 hover:shadow-lg transition-all"
           >
             <Copy className="w-4 h-4" />
             <span>Copy Sticker</span>
@@ -1309,7 +1328,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <button
             id="editor-download-btn"
             onClick={() => setShowExportModal(true)}
-            className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-100 text-neutral-800 text-xs font-bold px-4 py-2 rounded-xl border border-neutral-200 shadow-xs hover:shadow-md transition-all"
+            className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-100 text-neutral-800 text-xs font-bold px-3 sm:px-4 py-2 rounded-xl border border-neutral-200 shadow-xs hover:shadow-md transition-all"
           >
             <Download className="w-4 h-4 text-neutral-600" />
             <span>Download</span>
@@ -1428,7 +1447,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             onDragOver={handleCanvasDragOver}
             onDragLeave={handleCanvasDragLeave}
             onDrop={handleCanvasDrop}
-            className={`rounded-2xl p-4 sm:p-6 transition-all duration-150 shadow-xl border border-neutral-200/80 relative flex items-center justify-center ${
+            className={`w-full max-w-full flex items-center justify-center rounded-2xl p-4 sm:p-6 transition-all duration-150 shadow-xl border border-neutral-200/80 relative ${
               isCanvasDragOver ? 'ring-4 ring-rose-500 scale-102' : ''
             } ${
               previewBg === 'checkerboard'
@@ -1440,8 +1459,9 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                 : 'bg-amber-100'
             }`}
             style={{
-              transform: `scale(${zoomLevel})`,
+              transform: `scale(${effectiveCanvasScale})`,
               transformOrigin: 'center center',
+              overflow: 'hidden',
             }}
           >
             <canvas
@@ -1458,7 +1478,12 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                 if (e.touches[0]) handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
               }}
               onTouchEnd={handlePointerUp}
-              className="cursor-crosshair max-w-full max-h-[60vh] sm:max-h-[68vh] object-contain shadow-2xs touch-none"
+              className="cursor-crosshair w-full max-w-full h-auto object-contain shadow-2xs touch-none"
+              style={{
+                width: `${Math.min(canvasSize.width, viewportWidth < 768 ? viewportWidth - 48 : canvasSize.width)}px`,
+                maxWidth: '100%',
+                height: 'auto',
+              }}
             />
 
             {/* Drag & Drop Visual Overlay */}
@@ -1509,33 +1534,35 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         </main>
 
         {/* DESKTOP RIGHT COLUMN: Layer Inspector & Property Controls */}
-        <PropertiesPanel
-          selectedElement={selectedElement}
-          elements={elements}
-          onSelectElement={setSelectedId}
-          onUpdateSelected={handleUpdateSelected}
-          onDuplicateSelected={handleDuplicateSelected}
-          onDeleteSelected={handleDeleteSelected}
-          onLayerOrder={handleLayerOrder}
-          onReplaceImage={handleTriggerReplaceImage}
-          onTriggerBgRemoval={() => {
-            if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-              setRawUploadSrc(selectedElement.imgSrc);
-              setBgModalOpen(true);
-            }
-          }}
-          borderWidth={borderWidth}
-          onBorderWidthChange={setBorderWidth}
-          borderColor={borderColor}
-          onBorderColorChange={setBorderColor}
-          hasShadow={hasShadow}
-          onHasShadowToggle={() => setHasShadow(!hasShadow)}
-        />
+        <div className="hidden lg:block">
+          <PropertiesPanel
+            selectedElement={selectedElement}
+            elements={elements}
+            onSelectElement={setSelectedId}
+            onUpdateSelected={handleUpdateSelected}
+            onDuplicateSelected={handleDuplicateSelected}
+            onDeleteSelected={handleDeleteSelected}
+            onLayerOrder={handleLayerOrder}
+            onReplaceImage={handleTriggerReplaceImage}
+            onTriggerBgRemoval={() => {
+              if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
+                setRawUploadSrc(selectedElement.imgSrc);
+                setBgModalOpen(true);
+              }
+            }}
+            borderWidth={borderWidth}
+            onBorderWidthChange={setBorderWidth}
+            borderColor={borderColor}
+            onBorderColorChange={setBorderColor}
+            hasShadow={hasShadow}
+            onHasShadowToggle={() => setHasShadow(!hasShadow)}
+          />
+        </div>
 
         {/* MOBILE BOTTOM SHEET FOR PROPERTIES / LAYERS */}
         {isPropertiesOpenMobile && (
-          <div className="fixed inset-0 z-50 lg:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
-            <div className="w-full">
+          <div className="fixed inset-0 z-50 lg:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150" onClick={() => setIsPropertiesOpenMobile(false)}>
+            <div className="w-full" onClick={(e) => e.stopPropagation()}>
               <PropertiesPanel
                 selectedElement={selectedElement}
                 elements={elements}

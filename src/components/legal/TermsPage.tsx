@@ -20,7 +20,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({ onNavigate }) => {
         </button>
 
         <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-neutral-900 to-neutral-700 px-6 py-8 sm:px-10">
+          <div className="bg-gradient-to-r from-neutral-900 to-neutral-700 px-5 py-8 sm:px-10">
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-2.5">
                 <Scale className="w-5 h-5 text-white" />

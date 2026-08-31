@@ -171,71 +171,97 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-neutral-200 bg-white px-4 pt-3 pb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xl">
-          <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider px-2 pt-1">Collections</div>
-          <div className="grid grid-cols-2 gap-2">
-            {categories.map((cat) => (
+        <div className="md:hidden fixed inset-0 z-40 bg-neutral-900/35 backdrop-blur-[1px]" onClick={() => setIsMobileMenuOpen(false)}>
+          <div
+            className="absolute right-0 top-0 h-full w-[86vw] max-w-sm bg-white shadow-2xl border-l border-neutral-200 animate-in slide-in-from-right-4 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-400 p-0.5">
+                  <div className="w-full h-full rounded-[10px] bg-white flex items-center justify-center">
+                    <Scissors className="w-4 h-4 text-rose-500 transform -rotate-45" />
+                  </div>
+                </div>
+                <span className="text-sm font-extrabold text-neutral-900">Menu</span>
+              </div>
               <button
-                key={cat.slug}
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onNavigate({ type: 'category', category: cat.slug });
-                }}
-                className="text-left text-xs sm:text-sm px-3 py-2.5 rounded-xl bg-neutral-50 hover:bg-rose-50 hover:text-rose-600 font-medium text-neutral-800 min-h-[44px] flex items-center justify-between transition-colors border border-neutral-150"
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-600 min-h-[40px] min-w-[40px] flex items-center justify-center"
+                aria-label="Close mobile menu"
               >
-                <span>{cat.label}</span>
-                {cat.badge && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700">
-                    {cat.badge}
-                  </span>
-                )}
+                <X className="w-5 h-5" />
               </button>
-            ))}
-          </div>
+            </div>
 
-          <div className="pt-2 border-t border-neutral-100 space-y-1.5">
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onNavigate({ type: 'templates' });
-              }}
-              className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-rose-600 bg-rose-50/60 font-semibold"
-            >
-              <Sparkles className="w-4 h-4 text-rose-500" />
-              <span>Browse All Templates</span>
-            </button>
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onNavigate({ type: 'blog' });
-              }}
-              className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
-            >
-              <BookOpen className="w-4 h-4 text-neutral-500" />
-              <span>Guides & Sizing</span>
-            </button>
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onNavigate({ type: 'pricing' });
-              }}
-              className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
-            >
-              <Tag className="w-4 h-4 text-neutral-500" />
-              <span>Pricing (100% Free)</span>
-            </button>
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onNavigate({ type: 'about' });
-              }}
-              className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
-            >
-              <Info className="w-4 h-4 text-neutral-500" />
-              <span>About StickerMaker</span>
-            </button>
+            <div className="px-4 pt-4 pb-6 space-y-3">
+              <div className="text-xs font-bold text-neutral-400 uppercase tracking-wider px-2 pt-1">Collections</div>
+              <div className="grid grid-cols-2 gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.slug}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onNavigate({ type: 'category', category: cat.slug });
+                    }}
+                    className="text-left text-xs sm:text-sm px-3 py-2.5 rounded-xl bg-neutral-50 hover:bg-rose-50 hover:text-rose-600 font-medium text-neutral-800 min-h-[44px] flex items-center justify-between transition-colors border border-neutral-150"
+                  >
+                    <span>{cat.label}</span>
+                    {cat.badge && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700">
+                        {cat.badge}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <div className="pt-2 border-t border-neutral-100 space-y-1.5">
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigate({ type: 'templates' });
+                  }}
+                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-rose-600 bg-rose-50/60 font-semibold"
+                >
+                  <Sparkles className="w-4 h-4 text-rose-500" />
+                  <span>Browse All Templates</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigate({ type: 'blog' });
+                  }}
+                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
+                >
+                  <BookOpen className="w-4 h-4 text-neutral-500" />
+                  <span>Guides & Sizing</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigate({ type: 'pricing' });
+                  }}
+                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
+                >
+                  <Tag className="w-4 h-4 text-neutral-500" />
+                  <span>Pricing (100% Free)</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigate({ type: 'about' });
+                  }}
+                  className="w-full text-left px-3.5 py-3 text-sm font-medium rounded-xl hover:bg-neutral-50 min-h-[44px] flex items-center gap-2 text-neutral-700"
+                >
+                  <Info className="w-4 h-4 text-neutral-500" />
+                  <span>About StickerMaker</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

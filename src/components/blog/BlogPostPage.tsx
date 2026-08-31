@@ -87,9 +87,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) 
 
   return (
     <div className="w-full flex flex-col items-center py-12 bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 w-full space-y-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 w-full space-y-6 sm:space-y-8">
         {/* Top Back Navigation */}
-        <div className="flex items-center justify-between pb-6 border-b border-neutral-200">
+        <div className="flex items-center justify-between gap-3 pb-6 border-b border-neutral-200">
           <button
             onClick={() => onNavigate({ type: 'blog' })}
             className="inline-flex items-center gap-2 text-xs font-bold text-neutral-600 hover:text-rose-600 transition-colors"
@@ -119,7 +119,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) 
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight">
+          <h1 className="text-[2rem] sm:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight">
             {post.title}
           </h1>
 
@@ -135,7 +135,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onNavigate }) 
         </header>
 
         {/* Lead Excerpt */}
-        <p className="text-base text-neutral-700 font-medium leading-relaxed bg-neutral-50 p-5 rounded-2xl border border-neutral-200">
+        <p className="text-sm sm:text-base text-neutral-700 font-medium leading-relaxed bg-neutral-50 p-4 sm:p-5 rounded-2xl border border-neutral-200">
           {post.excerpt}
         </p>
 
