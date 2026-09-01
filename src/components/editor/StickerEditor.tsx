@@ -15,6 +15,7 @@ import { TemplateSidebar } from './TemplateSidebar';
 import { PropertiesPanel } from './PropertiesPanel';
 import { FloatingToolbar } from './FloatingToolbar';
 import { BgRemovalModal } from './BgRemovalModal';
+import { MobileToolPanel } from './MobileToolPanel';
 import { 
   Download, 
   Undo2, 
@@ -121,10 +122,15 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedId && viewportWidth < 768) {
+    if (!selectedId && viewportWidth < 768) {
+      setIsPropertiesOpenMobile(false);
+      return;
+    }
+
+    if (selectedId && viewportWidth < 768 && !isPropertiesOpenMobile) {
       setIsPropertiesOpenMobile(true);
     }
-  }, [selectedId, viewportWidth]);
+  }, [selectedId, viewportWidth, isPropertiesOpenMobile]);
 
   // Pre-load fonts for any active text elements
   useEffect(() => {
@@ -1453,52 +1459,66 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
         {/* MOBILE LEFT DRAWER MODAL */}
         {isSidebarOpenMobile && (
-          <div className="fixed inset-0 z-50 md:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
-            <div className="bg-white rounded-t-3xl max-h-[85vh] h-[85vh] flex flex-col overflow-hidden shadow-2xl border-t border-neutral-200">
-              <TemplateSidebar
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                borderWidth={borderWidth}
-                onBorderWidthChange={setBorderWidth}
-                borderColor={borderColor}
-                onBorderColorChange={setBorderColor}
-                hasShadow={hasShadow}
-                onHasShadowToggle={() => setHasShadow(!hasShadow)}
-                previewBg={previewBg}
-                onPreviewBgChange={setPreviewBg}
-                onSelectTemplate={(tmpl) => {
-                  loadTemplate(tmpl);
-                  setIsSidebarOpenMobile(false);
-                }}
-                onAddText={(type) => {
-                  handleAddText(type);
-                  setIsSidebarOpenMobile(false);
-                }}
-                onAddShape={(shape, fill) => {
-                  handleAddShape(shape, fill);
-                  setIsSidebarOpenMobile(false);
-                }}
-                onAddClipart={(item) => {
-                  handleAddClipart(item);
-                  setIsSidebarOpenMobile(false);
-                }}
-                onUploadImageFile={(file) => {
-                  handleUploadImageFile(file);
-                  setIsSidebarOpenMobile(false);
-                }}
-                isProcessingUpload={isProcessingUpload}
-                stickerPack={stickerPack}
-                activePackIndex={activePackIndex}
-                onSelectPackIndex={setActivePackIndex}
-                onAddPackItem={() => {
-                  const newId = `stk-${stickerPack.length + 1}`;
-                  setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
-                  setActivePackIndex(stickerPack.length);
-                }}
-                onCloseMobile={() => setIsSidebarOpenMobile(false)}
-              />
-            </div>
-          </div>
+          <MobileToolPanel
+            title={
+              activeTab === 'border'
+                ? 'Die-Cut'
+                : activeTab === 'templates'
+                  ? 'Templates'
+                  : activeTab === 'text'
+                    ? 'Text'
+                    : activeTab === 'uploads'
+                      ? 'Upload'
+                      : activeTab === 'elements'
+                        ? 'Clipart'
+                        : activeTab === 'pack'
+                          ? 'Pack'
+                          : 'Tools'}
+            onClose={() => setIsSidebarOpenMobile(false)}
+          >
+            <TemplateSidebar
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              borderWidth={borderWidth}
+              onBorderWidthChange={setBorderWidth}
+              borderColor={borderColor}
+              onBorderColorChange={setBorderColor}
+              hasShadow={hasShadow}
+              onHasShadowToggle={() => setHasShadow(!hasShadow)}
+              previewBg={previewBg}
+              onPreviewBgChange={setPreviewBg}
+              onSelectTemplate={(tmpl) => {
+                loadTemplate(tmpl);
+                setIsSidebarOpenMobile(false);
+              }}
+              onAddText={(type) => {
+                handleAddText(type);
+                setIsSidebarOpenMobile(false);
+              }}
+              onAddShape={(shape, fill) => {
+                handleAddShape(shape, fill);
+                setIsSidebarOpenMobile(false);
+              }}
+              onAddClipart={(item) => {
+                handleAddClipart(item);
+                setIsSidebarOpenMobile(false);
+              }}
+              onUploadImageFile={(file) => {
+                handleUploadImageFile(file);
+                setIsSidebarOpenMobile(false);
+              }}
+              isProcessingUpload={isProcessingUpload}
+              stickerPack={stickerPack}
+              activePackIndex={activePackIndex}
+              onSelectPackIndex={setActivePackIndex}
+              onAddPackItem={() => {
+                const newId = `stk-${stickerPack.length + 1}`;
+                setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
+                setActivePackIndex(stickerPack.length);
+              }}
+              onCloseMobile={() => setIsSidebarOpenMobile(false)}
+            />
+          </MobileToolPanel>
         )}
 
         {/* CENTER COLUMN: Live Interactive Viewport */}
@@ -1645,50 +1665,37 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
         {/* MOBILE COMPACT PROPERTIES STRIP FOR LIVE ADJUSTMENTS */}
         {isPropertiesOpenMobile && selectedElement && (
-          <div className="fixed inset-x-0 bottom-[72px] z-40 lg:hidden pointer-events-none">
-            <div className="mx-auto max-w-md px-2 pointer-events-auto">
-              <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white/95 shadow-2xl backdrop-blur-md">
-                <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2">
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                    <Layers className="h-3.5 w-3.5 text-rose-500" />
-                    <span>Adjust</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsPropertiesOpenMobile(false)}
-                    className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700"
-                  >
-                    Done
-                  </button>
-                </div>
-                <PropertiesPanel
-                  selectedElement={selectedElement}
-                  elements={elements}
-                  onSelectElement={setSelectedId}
-                  onUpdateSelected={handleUpdateSelected}
-                  onDuplicateSelected={handleDuplicateSelected}
-                  onDeleteSelected={handleDeleteSelected}
-                  onLayerOrder={handleLayerOrder}
-                  onReplaceImage={handleTriggerReplaceImage}
-                  onTriggerBgRemoval={() => {
-                    if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                      setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
-                      setBgModalOpen(true);
-                    }
-                  }}
-                  onRestoreOriginalBackground={handleRestoreOriginalBackground}
-                  borderWidth={borderWidth}
-                  onBorderWidthChange={setBorderWidth}
-                  borderColor={borderColor}
-                  onBorderColorChange={setBorderColor}
-                  hasShadow={hasShadow}
-                  onHasShadowToggle={() => setHasShadow(!hasShadow)}
-                  isMobileModal={true}
-                  onCloseMobile={() => setIsPropertiesOpenMobile(false)}
-                />
-              </div>
-            </div>
-          </div>
+          <MobileToolPanel
+            title="Adjust"
+            onClose={() => setIsPropertiesOpenMobile(false)}
+            className="bg-transparent"
+          >
+            <PropertiesPanel
+              selectedElement={selectedElement}
+              elements={elements}
+              onSelectElement={setSelectedId}
+              onUpdateSelected={handleUpdateSelected}
+              onDuplicateSelected={handleDuplicateSelected}
+              onDeleteSelected={handleDeleteSelected}
+              onLayerOrder={handleLayerOrder}
+              onReplaceImage={handleTriggerReplaceImage}
+              onTriggerBgRemoval={() => {
+                if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
+                  setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
+                  setBgModalOpen(true);
+                }
+              }}
+              onRestoreOriginalBackground={handleRestoreOriginalBackground}
+              borderWidth={borderWidth}
+              onBorderWidthChange={setBorderWidth}
+              borderColor={borderColor}
+              onBorderColorChange={setBorderColor}
+              hasShadow={hasShadow}
+              onHasShadowToggle={() => setHasShadow(!hasShadow)}
+              isMobileModal={true}
+              onCloseMobile={() => setIsPropertiesOpenMobile(false)}
+            />
+          </MobileToolPanel>
         )}
       </div>
 
