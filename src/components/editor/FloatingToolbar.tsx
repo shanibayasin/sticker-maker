@@ -206,7 +206,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
           </button>
 
           {showShapePicker && (
-            <div className="absolute top-full left-0 z-50 mt-2 w-40 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in">
+            <div className="absolute bottom-full left-0 z-50 mb-2 w-40 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in">
               <div className="grid grid-cols-2 gap-1">
                 {shapes.map((s) => (
                   <button
@@ -243,7 +243,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </button>
 
         {showColorPicker && (
-          <div className="absolute top-full left-0 z-50 mt-2 w-44 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in">
+          <div className="absolute bottom-full left-0 z-50 mb-2 w-44 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in">
             <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-neutral-500">Fill Color</span>
             <div className="flex flex-wrap gap-1.5">
               {colors.map((c) => (
