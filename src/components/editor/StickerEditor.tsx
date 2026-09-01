@@ -15,7 +15,6 @@ import { TemplateSidebar } from './TemplateSidebar';
 import { PropertiesPanel } from './PropertiesPanel';
 import { FloatingToolbar } from './FloatingToolbar';
 import { BgRemovalModal } from './BgRemovalModal';
-import { MobileToolPanel } from './MobileToolPanel';
 import { 
   Download, 
   Undo2, 
@@ -34,7 +33,8 @@ import {
   Type,
   Image as ImageIcon,
   Shapes,
-  Layers
+  Layers,
+  Package
 } from 'lucide-react';
 
 interface StickerEditorProps {
@@ -42,6 +42,8 @@ interface StickerEditorProps {
   initialTemplateId?: string;
   onNavigate: (route: PageRoute) => void;
 }
+
+type MobilePanel = 'dieCut' | 'templates' | 'text' | 'uploads' | 'clipart' | 'pack' | 'inspect' | null;
 
 // Transform handle types
 type TransformHandle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'rot' | 'body' | null;
@@ -53,10 +55,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   initialTemplateId, 
   onNavigate 
 }) => {
-  // Active left sidebar tab & responsive drawer
+  // Active left sidebar tab & single shared mobile panel state so only one panel can be open at a time
   const [activeTab, setActiveTab] = useState<'border' | 'ai' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack'>('border');
-  const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState<boolean>(false);
-  const [isPropertiesOpenMobile, setIsPropertiesOpenMobile] = useState<boolean>(false);
+  const [activeMobilePanel, setActiveMobilePanel] = useState<MobilePanel>(null);
+  const [mobileSheetHeight, setMobileSheetHeight] = useState<number>(62);
+  const mobileSheetDragRef = useRef<{ startY: number; startHeight: number } | null>(null);
 
   // Canvas dimensions & presets
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number; name: string }>({
@@ -121,17 +124,6 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    if (!selectedId && viewportWidth < 768) {
-      setIsPropertiesOpenMobile(false);
-      return;
-    }
-
-    if (selectedId && viewportWidth < 768 && !isPropertiesOpenMobile) {
-      setIsPropertiesOpenMobile(true);
-    }
-  }, [selectedId, viewportWidth, isPropertiesOpenMobile]);
-
   // Pre-load fonts for any active text elements
   useEffect(() => {
     elements.forEach((elem) => {
@@ -194,16 +186,16 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   // Push history snapshot
   const pushHistory = useCallback((newElements: CanvasElement[]) => {
     const cleanSnapshot = serializeElements(newElements);
+
     setHistory((prev) => {
-      const updated = prev.slice(0, historyIndex + 1);
+      const updated = prev.slice(0, Math.min(historyIndex + 1, prev.length));
       updated.push(cleanSnapshot);
-      // Cap history to 30 snapshots to keep memory lean
       if (updated.length > 30) updated.shift();
       return updated;
     });
+
     setHistoryIndex((prev) => Math.min(prev + 1, 29));
 
-    // Save to localStorage
     try {
       localStorage.setItem(
         STORAGE_KEY,
@@ -437,6 +429,22 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       loadTemplate(STICKER_TEMPLATES[0]);
     }
   }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements, loadProcessedPhotoFromSession]);
+
+  const handleMobileSheetDragStart = (clientY: number) => {
+    mobileSheetDragRef.current = { startY: clientY, startHeight: mobileSheetHeight };
+  };
+
+  const handleMobileSheetDragMove = (clientY: number) => {
+    if (!mobileSheetDragRef.current) return;
+    const deltaY = mobileSheetDragRef.current.startY - clientY;
+    const deltaPct = (deltaY / window.innerHeight) * 100;
+    const nextHeight = Math.min(82, Math.max(45, mobileSheetDragRef.current.startHeight + deltaPct));
+    setMobileSheetHeight(nextHeight);
+  };
+
+  const handleMobileSheetDragEnd = () => {
+    mobileSheetDragRef.current = null;
+  };
 
   // Fit to screen helper
   const handleFitToScreen = () => {
@@ -1337,7 +1345,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
           {/* Mobile Sidebar Toggle Button */}
           <button
-            onClick={() => setIsSidebarOpenMobile(!isSidebarOpenMobile)}
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'dieCut';
+              setActiveTab('border');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
             className="p-2 rounded-lg hover:bg-white/5 text-slate-300 md:hidden"
             title="Toggle Drawer"
           >
@@ -1458,67 +1470,53 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         </div>
 
         {/* MOBILE LEFT DRAWER MODAL */}
-        {isSidebarOpenMobile && (
-          <MobileToolPanel
-            title={
-              activeTab === 'border'
-                ? 'Die-Cut'
-                : activeTab === 'templates'
-                  ? 'Templates'
-                  : activeTab === 'text'
-                    ? 'Text'
-                    : activeTab === 'uploads'
-                      ? 'Upload'
-                      : activeTab === 'elements'
-                        ? 'Clipart'
-                        : activeTab === 'pack'
-                          ? 'Pack'
-                          : 'Tools'}
-            onClose={() => setIsSidebarOpenMobile(false)}
-          >
-            <TemplateSidebar
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              borderWidth={borderWidth}
-              onBorderWidthChange={setBorderWidth}
-              borderColor={borderColor}
-              onBorderColorChange={setBorderColor}
-              hasShadow={hasShadow}
-              onHasShadowToggle={() => setHasShadow(!hasShadow)}
-              previewBg={previewBg}
-              onPreviewBgChange={setPreviewBg}
-              onSelectTemplate={(tmpl) => {
-                loadTemplate(tmpl);
-                setIsSidebarOpenMobile(false);
-              }}
-              onAddText={(type) => {
-                handleAddText(type);
-                setIsSidebarOpenMobile(false);
-              }}
-              onAddShape={(shape, fill) => {
-                handleAddShape(shape, fill);
-                setIsSidebarOpenMobile(false);
-              }}
-              onAddClipart={(item) => {
-                handleAddClipart(item);
-                setIsSidebarOpenMobile(false);
-              }}
-              onUploadImageFile={(file) => {
-                handleUploadImageFile(file);
-                setIsSidebarOpenMobile(false);
-              }}
-              isProcessingUpload={isProcessingUpload}
-              stickerPack={stickerPack}
-              activePackIndex={activePackIndex}
-              onSelectPackIndex={setActivePackIndex}
-              onAddPackItem={() => {
-                const newId = `stk-${stickerPack.length + 1}`;
-                setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
-                setActivePackIndex(stickerPack.length);
-              }}
-              onCloseMobile={() => setIsSidebarOpenMobile(false)}
-            />
-          </MobileToolPanel>
+        {activeMobilePanel && activeMobilePanel !== 'inspect' && (
+          <div className="fixed inset-0 z-50 md:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
+            <div className="bg-white rounded-t-3xl max-h-[85vh] h-[85vh] flex flex-col overflow-hidden shadow-2xl border-t border-neutral-200">
+              <TemplateSidebar
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                borderWidth={borderWidth}
+                onBorderWidthChange={setBorderWidth}
+                borderColor={borderColor}
+                onBorderColorChange={setBorderColor}
+                hasShadow={hasShadow}
+                onHasShadowToggle={() => setHasShadow(!hasShadow)}
+                previewBg={previewBg}
+                onPreviewBgChange={setPreviewBg}
+                onSelectTemplate={(tmpl) => {
+                  loadTemplate(tmpl);
+                  setActiveMobilePanel(null);
+                }}
+                onAddText={(type) => {
+                  handleAddText(type);
+                  setActiveMobilePanel(null);
+                }}
+                onAddShape={(shape, fill) => {
+                  handleAddShape(shape, fill);
+                  setActiveMobilePanel(null);
+                }}
+                onAddClipart={(item) => {
+                  handleAddClipart(item);
+                  setActiveMobilePanel(null);
+                }}
+                onUploadImageFile={(file) => {
+                  handleUploadImageFile(file);
+                  setActiveMobilePanel(null);
+                }}
+                isProcessingUpload={isProcessingUpload}
+                stickerPack={stickerPack}
+                activePackIndex={activePackIndex}
+                onSelectPackIndex={setActivePackIndex}
+                onAddPackItem={() => {
+                  const newId = `stk-${stickerPack.length + 1}`;
+                  setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
+                  setActivePackIndex(stickerPack.length);
+                }}
+                onCloseMobile={() => setActiveMobilePanel(null)}
+              />
+            </div>
+          </div>
         )}
 
         {/* CENTER COLUMN: Live Interactive Viewport */}
@@ -1531,6 +1529,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           <FloatingToolbar
             element={selectedElement}
             canvasBounds={getCanvasBounds()}
+            canvasSize={canvasSize}
             zoom={zoomLevel}
             onUpdate={handleUpdateSelected}
             onDuplicate={handleDuplicateSelected}
@@ -1663,39 +1662,54 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           />
         </div>
 
-        {/* MOBILE COMPACT PROPERTIES STRIP FOR LIVE ADJUSTMENTS */}
-        {isPropertiesOpenMobile && selectedElement && (
-          <MobileToolPanel
-            title="Adjust"
-            onClose={() => setIsPropertiesOpenMobile(false)}
-            className="bg-transparent"
-          >
-            <PropertiesPanel
-              selectedElement={selectedElement}
-              elements={elements}
-              onSelectElement={setSelectedId}
-              onUpdateSelected={handleUpdateSelected}
-              onDuplicateSelected={handleDuplicateSelected}
-              onDeleteSelected={handleDeleteSelected}
-              onLayerOrder={handleLayerOrder}
-              onReplaceImage={handleTriggerReplaceImage}
-              onTriggerBgRemoval={() => {
-                if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                  setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
-                  setBgModalOpen(true);
-                }
-              }}
-              onRestoreOriginalBackground={handleRestoreOriginalBackground}
-              borderWidth={borderWidth}
-              onBorderWidthChange={setBorderWidth}
-              borderColor={borderColor}
-              onBorderColorChange={setBorderColor}
-              hasShadow={hasShadow}
-              onHasShadowToggle={() => setHasShadow(!hasShadow)}
-              isMobileModal={true}
-              onCloseMobile={() => setIsPropertiesOpenMobile(false)}
-            />
-          </MobileToolPanel>
+        {/* MOBILE BOTTOM SHEET FOR PROPERTIES / LAYERS */}
+        {activeMobilePanel === 'inspect' && (
+          <div className="fixed inset-0 z-40 lg:hidden pointer-events-none" aria-hidden="true">
+            <div className="absolute inset-x-0 top-0 h-[52vh] bg-neutral-900/5" />
+            <div className="absolute inset-0 flex flex-col justify-end pointer-events-auto" onClick={() => setActiveMobilePanel(null)}>
+              <div className="w-full flex justify-center" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="w-full max-w-md bg-white rounded-t-[28px] shadow-2xl border-t border-neutral-200 overflow-hidden"
+                  style={{ height: `${mobileSheetHeight}vh`, maxHeight: `${mobileSheetHeight}vh` }}
+                >
+                  <div
+                    className="flex cursor-grab touch-none select-none items-center justify-center border-b border-neutral-100 bg-white px-4 py-2 active:cursor-grabbing"
+                    onPointerDown={(e) => handleMobileSheetDragStart(e.clientY)}
+                    onPointerMove={(e) => handleMobileSheetDragMove(e.clientY)}
+                    onPointerUp={handleMobileSheetDragEnd}
+                    onPointerLeave={handleMobileSheetDragEnd}
+                  >
+                    <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+                  </div>
+                  <PropertiesPanel
+                    selectedElement={selectedElement}
+                    elements={elements}
+                    onSelectElement={setSelectedId}
+                    onUpdateSelected={handleUpdateSelected}
+                    onDuplicateSelected={handleDuplicateSelected}
+                    onDeleteSelected={handleDeleteSelected}
+                    onLayerOrder={handleLayerOrder}
+                    onReplaceImage={handleTriggerReplaceImage}
+                    onTriggerBgRemoval={() => {
+                      if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
+                        setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
+                        setBgModalOpen(true);
+                      }
+                    }}
+                    onRestoreOriginalBackground={handleRestoreOriginalBackground}
+                    borderWidth={borderWidth}
+                    onBorderWidthChange={setBorderWidth}
+                    borderColor={borderColor}
+                    onBorderColorChange={setBorderColor}
+                    hasShadow={hasShadow}
+                    onHasShadowToggle={() => setHasShadow(!hasShadow)}
+                    isMobileModal={true}
+                    onCloseMobile={() => setActiveMobilePanel(null)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -1709,101 +1723,108 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       />
 
       {/* MOBILE BOTTOM TOOLBAR DOCK */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 shadow-lg">
-        <div className="mx-auto flex max-w-md items-center justify-between gap-1">
-          <button
-            onClick={() => {
-              setActiveTab('border');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'border' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <Scissors className="w-4 h-4" />
-            <span className="text-[10px]">Die-Cut</span>
-          </button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'dieCut';
+            setActiveTab('border');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'dieCut' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <Scissors className="w-4 h-4" />
+          <span className="text-[10px]">Die-Cut</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActiveTab('templates');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'templates' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span className="text-[10px]">Templates</span>
-          </button>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'templates';
+            setActiveTab('templates');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'templates' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          <span className="text-[10px]">Templates</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActiveTab('text');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'text' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <Type className="w-4 h-4" />
-            <span className="text-[10px]">Text</span>
-          </button>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'text';
+            setActiveTab('text');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'text' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <Type className="w-4 h-4" />
+          <span className="text-[10px]">Text</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActiveTab('uploads');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'uploads' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <ImageIcon className="w-4 h-4" />
-            <span className="text-[10px]">Upload</span>
-          </button>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'uploads';
+            setActiveTab('uploads');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'uploads' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <ImageIcon className="w-4 h-4" />
+          <span className="text-[10px]">Upload</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActiveTab('elements');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'elements' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <Shapes className="w-4 h-4" />
-            <span className="text-[10px]">Clipart</span>
-          </button>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'clipart';
+            setActiveTab('elements');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'clipart' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <Shapes className="w-4 h-4" />
+          <span className="text-[10px]">Clipart</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActiveTab('pack');
-              setIsSidebarOpenMobile(true);
-            }}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
-              isSidebarOpenMobile && activeTab === 'pack' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="text-[10px]">Pack</span>
-          </button>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'pack';
+            setActiveTab('pack');
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+            activeMobilePanel === 'pack' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <Package className="w-4 h-4" />
+          <span className="text-[10px]">Pack</span>
+        </button>
 
-          <button
-            onClick={() => setIsPropertiesOpenMobile(true)}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 relative transition-colors ${
-              isPropertiesOpenMobile ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
-            }`}
-          >
-            <div className="relative">
-              <Layers className="w-4 h-4" />
-              {selectedElement && (
-                <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
-              )}
-            </div>
-            <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            const nextPanel: Exclude<MobilePanel, null> = 'inspect';
+            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center relative transition-colors ${
+            activeMobilePanel === 'inspect' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+          }`}
+        >
+          <div className="relative">
+            <Layers className="w-4 h-4" />
+            {selectedElement && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+            )}
+          </div>
+          <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
+        </button>
       </div>
 
       {/* 3. BACKGROUND REMOVAL BEFORE/AFTER MODAL */}

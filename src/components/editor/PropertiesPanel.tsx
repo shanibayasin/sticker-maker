@@ -85,43 +85,47 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       aria-label="Properties and Layers Panel"
       className={
         isMobileModal
-          ? 'w-full max-h-[170px] bg-transparent p-0 overflow-hidden z-50 select-none'
+          ? 'w-full h-[62vh] max-h-[62vh] bg-white rounded-t-3xl p-4 space-y-4 overflow-hidden z-50 select-none shadow-2xl border-t border-slate-200 flex flex-col'
           : 'w-72 bg-[#f8fafc] border-l border-slate-200 p-4 space-y-5 overflow-y-auto hidden lg:block z-20 shrink-0 select-none shadow-[inset_1px_0_0_rgba(15,23,42,0.04)]'
       }
     >
-      {!isMobileModal && (
-        <div className="shrink-0">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-            <span className="font-extrabold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-rose-500" />
-              <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
-            </span>
+      <div className="shrink-0">
+        {isMobileModal && (
+          <div className="mb-2 flex justify-center">
+            <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+          </div>
+        )}
 
-            <div className="flex items-center gap-2">
-              {selectedElement && (
-                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md capitalize border border-rose-200">
-                  {selectedElement.type}
-                </span>
-              )}
+        <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+          <span className="font-extrabold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-rose-500" />
+            <span>{selectedElement ? 'Element Inspector' : 'Layer Stack'}</span>
+          </span>
 
-              {onCloseMobile && isMobileModal && (
-                <button
-                  type="button"
-                  onClick={onCloseMobile}
-                  className="p-1 text-neutral-400 hover:text-neutral-700 rounded-lg min-h-[32px] min-w-[32px] flex items-center justify-center"
-                  title="Close Panel"
-                >
-                  <Trash2 className="w-4 h-4 hidden" />
-                  <span className="text-xs font-bold text-neutral-600">Done</span>
-                </button>
-              )}
-            </div>
+          <div className="flex items-center gap-2">
+            {selectedElement && (
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md capitalize border border-rose-200">
+                {selectedElement.type}
+              </span>
+            )}
+
+            {onCloseMobile && isMobileModal && (
+              <button
+                type="button"
+                onClick={onCloseMobile}
+                className="p-1 text-neutral-400 hover:text-neutral-700 rounded-lg min-h-[32px] min-w-[32px] flex items-center justify-center"
+                title="Close Panel"
+              >
+                <Trash2 className="w-4 h-4 hidden" />
+                <span className="text-xs font-bold text-neutral-600">Done</span>
+              </button>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {selectedElement ? (
-        <div className={isMobileModal ? 'overflow-y-auto space-y-2 px-3 py-2 max-h-[138px]' : 'flex-1 overflow-y-auto space-y-4 pr-1 -mr-1 pb-2'}>
+        <div className="flex-1 overflow-y-auto space-y-4 pr-1 -mr-1 pb-2">
           {selectedElement.type === 'text' && (
             <div className="space-y-3">
               <div className="space-y-1">

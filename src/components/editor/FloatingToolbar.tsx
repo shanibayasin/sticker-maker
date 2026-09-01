@@ -21,6 +21,7 @@ import { FontPicker } from './FontPicker';
 interface FloatingToolbarProps {
   element: CanvasElement | null;
   canvasBounds: { left: number; top: number; width: number; height: number } | null;
+  canvasSize: { width: number; height: number };
   zoom: number;
   onUpdate: (props: Partial<CanvasElement>) => void;
   onDuplicate: () => void;
@@ -33,6 +34,7 @@ interface FloatingToolbarProps {
 export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   element,
   canvasBounds,
+  canvasSize,
   zoom,
   onUpdate,
   onDuplicate,
@@ -48,23 +50,30 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   if (!element || !canvasBounds) return null;
 
-  // Calculate screen position centered above the element
-  const scale = canvasBounds.width / 600; // standard canvas ratio
-  const screenElemX = canvasBounds.left + element.x * scale;
-  const screenElemY = canvasBounds.top + element.y * scale;
-  const elemHalfHeight = (element.height * scale) / 2;
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
+  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 720;
+  const toolbarWidth = 220;
+  const toolbarHeight = 48;
+  const gap = 10;
 
-  // Position floating toolbar ~55px above top of element
-  let topPos = screenElemY - elemHalfHeight - 56;
-  if (topPos < canvasBounds.top + 10) {
-    // If too close to top edge, flip toolbar to sit underneath the element
-    topPos = screenElemY + elemHalfHeight + 16;
+  const scaleY = canvasBounds.height / Math.max(canvasSize.height, 1);
+  const centerX = canvasBounds.left + (element.x / canvasSize.width) * canvasBounds.width;
+  const centerY = canvasBounds.top + (element.y / canvasSize.height) * canvasBounds.height;
+  const elemScreenHeight = Math.max(element.height * scaleY, 20);
+  const elemScreenTop = centerY - elemScreenHeight / 2;
+  const elemScreenBottom = centerY + elemScreenHeight / 2;
+
+  let topPos = elemScreenTop - toolbarHeight - gap;
+  if (topPos < 8) {
+    topPos = elemScreenBottom + gap;
   }
 
-  const leftPos = Math.max(
-    canvasBounds.left + 160,
-    Math.min(window.innerWidth - 200, screenElemX)
-  );
+  const minLeft = 8;
+  const maxLeft = Math.max(minLeft, viewportWidth - toolbarWidth - 8);
+  let leftPos = centerX - toolbarWidth / 2;
+  leftPos = Math.min(Math.max(leftPos, minLeft), maxLeft);
+
+  topPos = Math.min(Math.max(topPos, 8), Math.max(8, viewportHeight - toolbarHeight - 8));
 
   const colors = [
     '#000000', '#FFFFFF', '#F43F5E', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#78350F'
@@ -82,7 +91,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   return (
     <div
-      className="fixed z-40 -translate-x-1/2 flex items-center gap-1 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
+      className="fixed z-40 flex items-center gap-1 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
       style={{
         top: `${topPos}px`,
         left: `${leftPos}px`,
