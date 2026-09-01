@@ -48,6 +48,22 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [showRotateMenu, setShowRotateMenu] = useState(false);
 
+  const toggleShapePicker = () => {
+    setShowShapePicker((current) => {
+      const next = !current;
+      if (next) setShowColorPicker(false);
+      return next;
+    });
+  };
+
+  const toggleColorPicker = () => {
+    setShowColorPicker((current) => {
+      const next = !current;
+      if (next) setShowShapePicker(false);
+      return next;
+    });
+  };
+
   if (!element || !canvasBounds) return null;
 
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
@@ -181,7 +197,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       {(element.type === 'shape' || element.type === 'badge') && (
         <div className="relative">
           <button
-            onClick={() => setShowShapePicker(!showShapePicker)}
+            onClick={toggleShapePicker}
             className="flex items-center gap-1.5 bg-neutral-100 hover:bg-neutral-200/80 px-2 py-1 rounded-lg font-semibold text-xs capitalize"
           >
             <Shapes className="w-3.5 h-3.5 text-rose-500" />
@@ -190,21 +206,23 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
           </button>
 
           {showShapePicker && (
-            <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-xl border border-neutral-200 p-2 grid grid-cols-2 gap-1 w-44 z-50 animate-in fade-in">
-              {shapes.map((s) => (
-                <button
-                  key={s.type}
-                  onClick={() => {
-                    onUpdate({ shapeType: s.type });
-                    setShowShapePicker(false);
-                  }}
-                  className={`p-1.5 rounded-lg text-left text-xs font-semibold hover:bg-neutral-100 ${
-                    element.shapeType === s.type ? 'bg-rose-50 text-rose-600' : ''
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
+            <div className="absolute top-full left-0 z-50 mt-2 w-40 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in">
+              <div className="grid grid-cols-2 gap-1">
+                {shapes.map((s) => (
+                  <button
+                    key={s.type}
+                    onClick={() => {
+                      onUpdate({ shapeType: s.type });
+                      setShowShapePicker(false);
+                    }}
+                    className={`rounded-lg p-1.5 text-left text-[11px] font-semibold hover:bg-neutral-100 ${
+                      element.shapeType === s.type ? 'bg-rose-50 text-rose-600' : 'text-neutral-700'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -213,7 +231,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       {/* 3. COLOR PALETTE */}
       <div className="relative border-l border-neutral-200 pl-1">
         <button
-          onClick={() => setShowColorPicker(!showColorPicker)}
+          onClick={toggleColorPicker}
           className="p-1.5 hover:bg-neutral-100 rounded-lg flex items-center gap-1"
           title="Color Settings"
         >
@@ -225,15 +243,15 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </button>
 
         {showColorPicker && (
-          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-xl border border-neutral-200 p-3 space-y-2 w-52 z-50 animate-in fade-in">
-            <span className="text-[11px] font-bold text-neutral-500 block">Fill Color</span>
+          <div className="absolute top-full left-0 z-50 mt-2 w-44 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in">
+            <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-neutral-500">Fill Color</span>
             <div className="flex flex-wrap gap-1.5">
               {colors.map((c) => (
                 <button
                   key={c}
                   onClick={() => onUpdate({ fill: c })}
-                  className={`w-6 h-6 rounded-full border ${
-                    element.fill === c ? 'ring-2 ring-rose-500 scale-110' : 'border-neutral-200'
+                  className={`h-6 w-6 rounded-full border ${
+                    element.fill === c ? 'scale-110 ring-2 ring-rose-500' : 'border-neutral-200'
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -242,19 +260,19 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
                 type="color"
                 value={element.fill || '#000000'}
                 onChange={(e) => onUpdate({ fill: e.target.value })}
-                className="w-6 h-6 rounded-full cursor-pointer bg-transparent border-0"
+                className="h-6 w-6 cursor-pointer rounded-full border-0 bg-transparent"
               />
             </div>
 
             {element.type === 'text' && (
-              <div className="pt-2 border-t border-neutral-150 space-y-1">
-                <span className="text-[11px] font-bold text-neutral-500 block">Outline Stroke</span>
+              <div className="mt-2 border-t border-neutral-150 pt-2">
+                <span className="mb-1 block text-[11px] font-bold text-neutral-500">Outline Stroke</span>
                 <div className="flex items-center gap-1.5">
                   <input
                     type="color"
                     value={element.stroke || '#FFFFFF'}
                     onChange={(e) => onUpdate({ stroke: e.target.value })}
-                    className="w-5 h-5 rounded-full cursor-pointer bg-transparent"
+                    className="h-5 w-5 cursor-pointer rounded-full bg-transparent"
                   />
                   <input
                     type="range"
@@ -262,7 +280,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
                     max="6"
                     value={element.strokeWidth || 0}
                     onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
-                    className="w-24 accent-rose-500 h-1 bg-neutral-200 rounded"
+                    className="h-1 w-24 accent-rose-500 rounded bg-neutral-200"
                   />
                   <span className="text-[10px] text-neutral-500">{element.strokeWidth || 0}px</span>
                 </div>
