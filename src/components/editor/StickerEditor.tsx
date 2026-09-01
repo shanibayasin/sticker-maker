@@ -1307,10 +1307,21 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     return canvasRef.current.getBoundingClientRect();
   };
 
-  const mobileCanvasScale = viewportWidth < 768
-    ? Math.min(1, Math.max(0.55, (viewportWidth - 72) / Math.max(canvasSize.width, 220)))
+  const isMobile = viewportWidth < 768;
+  const mobileAvailableWidth = isMobile ? Math.max(260, viewportWidth - 28) : Number.POSITIVE_INFINITY;
+  const mobileAvailableHeight = isMobile
+    ? Math.max(280, (typeof window !== 'undefined' ? window.innerHeight : 800) - 190)
+    : Number.POSITIVE_INFINITY;
+  const mobileCanvasScale = isMobile
+    ? Math.min(1, mobileAvailableWidth / Math.max(canvasSize.width, 1), mobileAvailableHeight / Math.max(canvasSize.height, 1))
     : 1;
-  const effectiveCanvasScale = viewportWidth < 768 ? Math.min(zoomLevel, mobileCanvasScale) : zoomLevel;
+  const effectiveCanvasScale = isMobile ? Math.min(zoomLevel, mobileCanvasScale) : zoomLevel;
+  const renderedCanvasWidth = isMobile
+    ? Math.min(canvasSize.width * effectiveCanvasScale, mobileAvailableWidth)
+    : Math.min(canvasSize.width, viewportWidth < 768 ? viewportWidth - 48 : canvasSize.width);
+  const renderedCanvasHeight = isMobile
+    ? renderedCanvasWidth * (canvasSize.height / Math.max(canvasSize.width, 1))
+    : 'auto';
 
   return (
     <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-[#eef2f7] select-none">
@@ -1523,7 +1534,10 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         <main 
           ref={canvasContainerRef}
           aria-label="Sticker Canvas Viewport"
-          className="flex-1 flex flex-col items-center justify-center relative z-10 overflow-hidden p-3 sm:p-6 md:p-8"
+          className="flex-1 flex flex-col items-center justify-center relative z-10 overflow-hidden px-2 pb-[calc(env(safe-area-inset-bottom)+64px)] pt-2 sm:px-4 sm:pb-4 md:px-8 md:pb-0 md:pt-8"
+          style={{
+            minHeight: isMobile ? 'calc(100dvh - 58px - 72px)' : undefined,
+          }}
         >
           {/* Floating Contextual Toolbar near selected element */}
           <FloatingToolbar
@@ -1549,7 +1563,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             onDragOver={handleCanvasDragOver}
             onDragLeave={handleCanvasDragLeave}
             onDrop={handleCanvasDrop}
-            className={`w-full max-w-full flex items-center justify-center rounded-2xl p-4 sm:p-6 transition-all duration-150 shadow-xl border border-neutral-200/80 relative ${
+            className={`w-full max-w-full flex items-center justify-center rounded-2xl p-2 sm:p-4 md:p-6 transition-all duration-150 shadow-xl border border-neutral-200/80 relative ${
               isCanvasDragOver ? 'ring-4 ring-rose-500 scale-102' : ''
             } ${
               previewBg === 'checkerboard'
@@ -1561,9 +1575,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                 : 'bg-amber-100'
             }`}
             style={{
-              transform: `scale(${effectiveCanvasScale})`,
-              transformOrigin: 'center center',
               overflow: 'hidden',
+              minHeight: isMobile ? '320px' : 'auto',
             }}
           >
             <canvas
@@ -1580,11 +1593,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
                 if (e.touches[0]) handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
               }}
               onTouchEnd={handlePointerUp}
-              className="cursor-crosshair w-full max-w-full h-auto object-contain shadow-2xs touch-none"
+              className="cursor-crosshair w-full max-w-full object-contain shadow-2xs touch-none"
               style={{
-                width: `${Math.min(canvasSize.width, viewportWidth < 768 ? viewportWidth - 48 : canvasSize.width)}px`,
+                width: `${renderedCanvasWidth}px`,
                 maxWidth: '100%',
-                height: 'auto',
+                height: isMobile ? `${renderedCanvasHeight}px` : 'auto',
               }}
             />
 
@@ -1723,7 +1736,13 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       />
 
       {/* MOBILE BOTTOM TOOLBAR DOCK */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-2 flex items-center justify-around shadow-lg"
+        style={{
+          paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))',
+          height: 'calc(3.5rem + env(safe-area-inset-bottom))',
+        }}
+      >
         <button
           onClick={() => {
             const nextPanel: Exclude<MobilePanel, null> = 'dieCut';

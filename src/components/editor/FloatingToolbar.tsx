@@ -68,9 +68,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 720;
-  const toolbarWidth = 220;
-  const toolbarHeight = 48;
-  const gap = 10;
+  const isMobile = viewportWidth < 768;
+  const toolbarWidth = isMobile ? 176 : 220;
+  const toolbarHeight = isMobile ? 40 : 48;
+  const gap = isMobile ? 8 : 10;
 
   const scaleY = canvasBounds.height / Math.max(canvasSize.height, 1);
   const centerX = canvasBounds.left + (element.x / canvasSize.width) * canvasBounds.width;
@@ -79,15 +80,28 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const elemScreenTop = centerY - elemScreenHeight / 2;
   const elemScreenBottom = centerY + elemScreenHeight / 2;
 
-  let topPos = elemScreenTop - toolbarHeight - gap;
+  const spaceAbove = elemScreenTop;
+  const spaceBelow = viewportHeight - elemScreenBottom;
+  const preferAbove = spaceAbove >= toolbarHeight + gap + 20;
+
+  let topPos = preferAbove ? elemScreenTop - toolbarHeight - gap : elemScreenBottom + gap;
+
   if (topPos < 8) {
-    topPos = elemScreenBottom + gap;
+    topPos = Math.min(Math.max(elemScreenBottom + gap, 8), Math.max(8, viewportHeight - toolbarHeight - 8));
+  }
+
+  if (topPos + toolbarHeight > viewportHeight - 8) {
+    topPos = Math.max(8, viewportHeight - toolbarHeight - 8);
   }
 
   const minLeft = 8;
   const maxLeft = Math.max(minLeft, viewportWidth - toolbarWidth - 8);
   let leftPos = centerX - toolbarWidth / 2;
-  leftPos = Math.min(Math.max(leftPos, minLeft), maxLeft);
+  if (isMobile) {
+    leftPos = Math.min(Math.max(centerX - toolbarWidth / 2, minLeft), maxLeft);
+  } else {
+    leftPos = Math.min(Math.max(leftPos, minLeft), maxLeft);
+  }
 
   topPos = Math.min(Math.max(topPos, 8), Math.max(8, viewportHeight - toolbarHeight - 8));
 
@@ -111,6 +125,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       style={{
         top: `${topPos}px`,
         left: `${leftPos}px`,
+        maxWidth: isMobile ? 'calc(100vw - 16px)' : undefined,
       }}
     >
       {/* 1. TEXT CONTROLS */}
@@ -198,7 +213,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         <div className="relative">
           <button
             onClick={toggleShapePicker}
-            className="flex items-center gap-1.5 bg-neutral-100 hover:bg-neutral-200/80 px-2 py-1 rounded-lg font-semibold text-xs capitalize"
+            className="flex min-h-[36px] items-center gap-1.5 bg-neutral-100 hover:bg-neutral-200/80 px-2 py-1 rounded-lg font-semibold text-xs capitalize"
           >
             <Shapes className="w-3.5 h-3.5 text-rose-500" />
             <span>{element.shapeType || 'Shape'}</span>
@@ -206,7 +221,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
           </button>
 
           {showShapePicker && (
-            <div className="absolute bottom-full left-0 z-50 mb-2 w-40 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in">
+            <div
+              className="absolute bottom-full left-1/2 z-50 mb-2 w-40 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in"
+              style={{ maxWidth: isMobile ? 'calc(100vw - 52px)' : undefined }}
+            >
               <div className="grid grid-cols-2 gap-1">
                 {shapes.map((s) => (
                   <button
@@ -232,7 +250,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       <div className="relative border-l border-neutral-200 pl-1">
         <button
           onClick={toggleColorPicker}
-          className="p-1.5 hover:bg-neutral-100 rounded-lg flex items-center gap-1"
+          className="flex min-h-[36px] items-center gap-1 rounded-lg p-1.5 hover:bg-neutral-100"
           title="Color Settings"
         >
           <div
@@ -243,7 +261,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </button>
 
         {showColorPicker && (
-          <div className="absolute bottom-full left-0 z-50 mb-2 w-44 max-h-[220px] overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in">
+          <div
+            className="absolute bottom-full left-1/2 z-50 mb-2 w-44 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in"
+            style={{ maxWidth: isMobile ? 'calc(100vw - 50px)' : undefined }}
+          >
             <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-neutral-500">Fill Color</span>
             <div className="flex flex-wrap gap-1.5">
               {colors.map((c) => (
