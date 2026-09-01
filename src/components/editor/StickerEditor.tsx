@@ -56,8 +56,6 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const [activeTab, setActiveTab] = useState<'border' | 'ai' | 'templates' | 'text' | 'uploads' | 'elements' | 'pack'>('border');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState<boolean>(false);
   const [isPropertiesOpenMobile, setIsPropertiesOpenMobile] = useState<boolean>(false);
-  const [mobileSheetHeight, setMobileSheetHeight] = useState<number>(62);
-  const mobileSheetDragRef = useRef<{ startY: number; startHeight: number } | null>(null);
 
   // Canvas dimensions & presets
   const [canvasSize, setCanvasSize] = useState<{ width: number; height: number; name: string }>({
@@ -433,22 +431,6 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       loadTemplate(STICKER_TEMPLATES[0]);
     }
   }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements, loadProcessedPhotoFromSession]);
-
-  const handleMobileSheetDragStart = (clientY: number) => {
-    mobileSheetDragRef.current = { startY: clientY, startHeight: mobileSheetHeight };
-  };
-
-  const handleMobileSheetDragMove = (clientY: number) => {
-    if (!mobileSheetDragRef.current) return;
-    const deltaY = mobileSheetDragRef.current.startY - clientY;
-    const deltaPct = (deltaY / window.innerHeight) * 100;
-    const nextHeight = Math.min(82, Math.max(45, mobileSheetDragRef.current.startHeight + deltaPct));
-    setMobileSheetHeight(nextHeight);
-  };
-
-  const handleMobileSheetDragEnd = () => {
-    mobileSheetDragRef.current = null;
-  };
 
   // Fit to screen helper
   const handleFitToScreen = () => {
@@ -1661,51 +1643,49 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           />
         </div>
 
-        {/* MOBILE BOTTOM SHEET FOR PROPERTIES / LAYERS */}
-        {isPropertiesOpenMobile && (
-          <div className="fixed inset-0 z-40 lg:hidden pointer-events-none" aria-hidden="true">
-            <div className="absolute inset-x-0 top-0 h-[52vh] bg-neutral-900/5" />
-            <div className="absolute inset-0 flex flex-col justify-end pointer-events-auto" onClick={() => setIsPropertiesOpenMobile(false)}>
-              <div className="w-full flex justify-center" onClick={(e) => e.stopPropagation()}>
-                <div
-                  className="w-full max-w-md bg-white rounded-t-[28px] shadow-2xl border-t border-neutral-200 overflow-hidden"
-                  style={{ height: `${mobileSheetHeight}vh`, maxHeight: `${mobileSheetHeight}vh` }}
-                >
-                  <div
-                    className="flex cursor-grab touch-none select-none items-center justify-center border-b border-neutral-100 bg-white px-4 py-2 active:cursor-grabbing"
-                    onPointerDown={(e) => handleMobileSheetDragStart(e.clientY)}
-                    onPointerMove={(e) => handleMobileSheetDragMove(e.clientY)}
-                    onPointerUp={handleMobileSheetDragEnd}
-                    onPointerLeave={handleMobileSheetDragEnd}
-                  >
-                    <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+        {/* MOBILE COMPACT PROPERTIES STRIP FOR LIVE ADJUSTMENTS */}
+        {isPropertiesOpenMobile && selectedElement && (
+          <div className="fixed inset-x-0 bottom-[72px] z-40 lg:hidden pointer-events-none">
+            <div className="mx-auto max-w-md px-2 pointer-events-auto">
+              <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white/95 shadow-2xl backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                    <Layers className="h-3.5 w-3.5 text-rose-500" />
+                    <span>Adjust</span>
                   </div>
-                  <PropertiesPanel
-                    selectedElement={selectedElement}
-                    elements={elements}
-                    onSelectElement={setSelectedId}
-                    onUpdateSelected={handleUpdateSelected}
-                    onDuplicateSelected={handleDuplicateSelected}
-                    onDeleteSelected={handleDeleteSelected}
-                    onLayerOrder={handleLayerOrder}
-                    onReplaceImage={handleTriggerReplaceImage}
-                    onTriggerBgRemoval={() => {
-                      if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
-                        setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
-                        setBgModalOpen(true);
-                      }
-                    }}
-                    onRestoreOriginalBackground={handleRestoreOriginalBackground}
-                    borderWidth={borderWidth}
-                    onBorderWidthChange={setBorderWidth}
-                    borderColor={borderColor}
-                    onBorderColorChange={setBorderColor}
-                    hasShadow={hasShadow}
-                    onHasShadowToggle={() => setHasShadow(!hasShadow)}
-                    isMobileModal={true}
-                    onCloseMobile={() => setIsPropertiesOpenMobile(false)}
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsPropertiesOpenMobile(false)}
+                    className="rounded-lg bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-700"
+                  >
+                    Done
+                  </button>
                 </div>
+                <PropertiesPanel
+                  selectedElement={selectedElement}
+                  elements={elements}
+                  onSelectElement={setSelectedId}
+                  onUpdateSelected={handleUpdateSelected}
+                  onDuplicateSelected={handleDuplicateSelected}
+                  onDeleteSelected={handleDeleteSelected}
+                  onLayerOrder={handleLayerOrder}
+                  onReplaceImage={handleTriggerReplaceImage}
+                  onTriggerBgRemoval={() => {
+                    if (selectedElement?.type === 'image' && selectedElement.imgSrc) {
+                      setRawUploadSrc(selectedElement.originalImageSrc || selectedElement.imgSrc);
+                      setBgModalOpen(true);
+                    }
+                  }}
+                  onRestoreOriginalBackground={handleRestoreOriginalBackground}
+                  borderWidth={borderWidth}
+                  onBorderWidthChange={setBorderWidth}
+                  borderColor={borderColor}
+                  onBorderColorChange={setBorderColor}
+                  hasShadow={hasShadow}
+                  onHasShadowToggle={() => setHasShadow(!hasShadow)}
+                  isMobileModal={true}
+                  onCloseMobile={() => setIsPropertiesOpenMobile(false)}
+                />
               </div>
             </div>
           </div>
@@ -1722,86 +1702,101 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       />
 
       {/* MOBILE BOTTOM TOOLBAR DOCK */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
-        <button
-          onClick={() => {
-            setActiveTab('border');
-            setIsSidebarOpenMobile(true);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            isSidebarOpenMobile && activeTab === 'border' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Scissors className="w-4 h-4" />
-          <span className="text-[10px]">Die-Cut</span>
-        </button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 shadow-lg">
+        <div className="mx-auto flex max-w-md items-center justify-between gap-1">
+          <button
+            onClick={() => {
+              setActiveTab('border');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'border' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <Scissors className="w-4 h-4" />
+            <span className="text-[10px]">Die-Cut</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setActiveTab('templates');
-            setIsSidebarOpenMobile(true);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            isSidebarOpenMobile && activeTab === 'templates' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span className="text-[10px]">Templates</span>
-        </button>
+          <button
+            onClick={() => {
+              setActiveTab('templates');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'templates' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-[10px]">Templates</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setActiveTab('text');
-            setIsSidebarOpenMobile(true);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            isSidebarOpenMobile && activeTab === 'text' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Type className="w-4 h-4" />
-          <span className="text-[10px]">Text</span>
-        </button>
+          <button
+            onClick={() => {
+              setActiveTab('text');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'text' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <Type className="w-4 h-4" />
+            <span className="text-[10px]">Text</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setActiveTab('uploads');
-            setIsSidebarOpenMobile(true);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            isSidebarOpenMobile && activeTab === 'uploads' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <ImageIcon className="w-4 h-4" />
-          <span className="text-[10px]">Upload</span>
-        </button>
+          <button
+            onClick={() => {
+              setActiveTab('uploads');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'uploads' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span className="text-[10px]">Upload</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setActiveTab('elements');
-            setIsSidebarOpenMobile(true);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            isSidebarOpenMobile && activeTab === 'elements' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Shapes className="w-4 h-4" />
-          <span className="text-[10px]">Clipart</span>
-        </button>
+          <button
+            onClick={() => {
+              setActiveTab('elements');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'elements' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <Shapes className="w-4 h-4" />
+            <span className="text-[10px]">Clipart</span>
+          </button>
 
-        <button
-          onClick={() => setIsPropertiesOpenMobile(true)}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center relative transition-colors ${
-            isPropertiesOpenMobile ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <div className="relative">
-            <Layers className="w-4 h-4" />
-            {selectedElement && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
-            )}
-          </div>
-          <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
-        </button>
+          <button
+            onClick={() => {
+              setActiveTab('pack');
+              setIsSidebarOpenMobile(true);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 transition-colors ${
+              isSidebarOpenMobile && activeTab === 'pack' ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span className="text-[10px]">Pack</span>
+          </button>
+
+          <button
+            onClick={() => setIsPropertiesOpenMobile(true)}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl p-1.5 relative transition-colors ${
+              isPropertiesOpenMobile ? 'bg-rose-50 font-bold text-rose-600' : 'text-neutral-600'
+            }`}
+          >
+            <div className="relative">
+              <Layers className="w-4 h-4" />
+              {selectedElement && (
+                <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              )}
+            </div>
+            <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
+          </button>
+        </div>
       </div>
 
       {/* 3. BACKGROUND REMOVAL BEFORE/AFTER MODAL */}
