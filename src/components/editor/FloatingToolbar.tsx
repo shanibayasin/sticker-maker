@@ -69,8 +69,8 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 720;
   const isMobile = viewportWidth < 768;
-  const toolbarWidth = isMobile ? 176 : 220;
-  const toolbarHeight = isMobile ? 40 : 48;
+  const toolbarWidth = isMobile ? 168 : 220;
+  const toolbarHeight = isMobile ? 36 : 48;
   const gap = isMobile ? 8 : 10;
 
   const scaleY = canvasBounds.height / Math.max(canvasSize.height, 1);
@@ -126,6 +126,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         top: `${topPos}px`,
         left: `${leftPos}px`,
         maxWidth: isMobile ? 'calc(100vw - 16px)' : undefined,
+        overflow: 'hidden',
       }}
     >
       {/* 1. TEXT CONTROLS */}
@@ -322,7 +323,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </button>
 
         {showRotateMenu && (
-          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-xl border border-neutral-200 p-2 w-40 z-50 animate-in fade-in space-y-1">
+          <div
+            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-2 w-40 z-50 animate-in fade-in space-y-1`}
+            style={{ maxWidth: isMobile ? 'calc(100vw - 40px)' : undefined }}
+          >
             <button
               onClick={() => {
                 onUpdate({ angle: ((element.angle || 0) + 90) % 360 });
@@ -404,7 +408,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </button>
 
         {showLayerMenu && (
-          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-xl border border-neutral-200 p-1.5 w-36 z-50 animate-in fade-in space-y-0.5">
+          <div
+            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-1.5 w-36 z-50 animate-in fade-in space-y-0.5`}
+            style={{ maxWidth: isMobile ? 'calc(100vw - 40px)' : undefined }}
+          >
             <button
               onClick={() => {
                 onLayerOrder('front');

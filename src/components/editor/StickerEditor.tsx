@@ -1308,9 +1308,9 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   };
 
   const isMobile = viewportWidth < 768;
-  const mobileAvailableWidth = isMobile ? Math.max(260, viewportWidth - 28) : Number.POSITIVE_INFINITY;
+  const mobileAvailableWidth = isMobile ? Math.max(220, viewportWidth - 24) : Number.POSITIVE_INFINITY;
   const mobileAvailableHeight = isMobile
-    ? Math.max(280, (typeof window !== 'undefined' ? window.innerHeight : 800) - 190)
+    ? Math.max(240, (typeof window !== 'undefined' ? window.innerHeight : 800) - 210)
     : Number.POSITIVE_INFINITY;
   const mobileCanvasScale = isMobile
     ? Math.min(1, mobileAvailableWidth / Math.max(canvasSize.width, 1), mobileAvailableHeight / Math.max(canvasSize.height, 1))
@@ -1318,7 +1318,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const effectiveCanvasScale = isMobile ? Math.min(zoomLevel, mobileCanvasScale) : zoomLevel;
   const renderedCanvasWidth = isMobile
     ? Math.min(canvasSize.width * effectiveCanvasScale, mobileAvailableWidth)
-    : Math.min(canvasSize.width, viewportWidth < 768 ? viewportWidth - 48 : canvasSize.width);
+    : canvasSize.width;
   const renderedCanvasHeight = isMobile
     ? renderedCanvasWidth * (canvasSize.height / Math.max(canvasSize.width, 1))
     : 'auto';
@@ -1334,7 +1334,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => onNavigate({ type: 'home' })}
-            className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-left transition-all hover:border-rose-400/60 hover:bg-white/10"
+            className="hidden md:flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 text-left transition-all hover:border-rose-400/60 hover:bg-white/10"
             title="Back to Home"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-amber-400 text-white shadow-sm ring-2 ring-white/10">
@@ -1355,17 +1355,6 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
           </nav>
 
           {/* Mobile Sidebar Toggle Button */}
-          <button
-            onClick={() => {
-              const nextPanel: Exclude<MobilePanel, null> = 'dieCut';
-              setActiveTab('border');
-              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-            }}
-            className="p-2 rounded-lg hover:bg-white/5 text-slate-300 md:hidden"
-            title="Toggle Drawer"
-          >
-            <Menu className="w-4 h-4" />
-          </button>
 
           {/* Undo / Redo with Keyboard Tooltips */}
           <div className="flex items-center gap-1 border-l border-white/10 pl-3">
@@ -1449,7 +1438,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       </header>
 
       {/* 2. MAIN 3-COLUMN STUDIO WORKSPACE */}
-      <div className="flex-1 flex overflow-hidden relative pb-16 md:pb-0 bg-[#eef2f7]">
+      <div className="flex-1 flex min-h-0 overflow-hidden relative bg-[#eef2f7] md:pb-0">
         {/* DESKTOP LEFT COLUMN: Sidebar Navigation & Content Drawer */}
         <div className="hidden md:flex h-full">
           <TemplateSidebar
@@ -1482,50 +1471,55 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
         {/* MOBILE LEFT DRAWER MODAL */}
         {activeMobilePanel && activeMobilePanel !== 'inspect' && (
-          <div className="fixed inset-0 z-50 md:hidden bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in duration-150">
-            <div className="bg-white rounded-t-3xl max-h-[85vh] h-[85vh] flex flex-col overflow-hidden shadow-2xl border-t border-neutral-200">
-              <TemplateSidebar
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                borderWidth={borderWidth}
-                onBorderWidthChange={setBorderWidth}
-                borderColor={borderColor}
-                onBorderColorChange={setBorderColor}
-                hasShadow={hasShadow}
-                onHasShadowToggle={() => setHasShadow(!hasShadow)}
-                previewBg={previewBg}
-                onPreviewBgChange={setPreviewBg}
-                onSelectTemplate={(tmpl) => {
-                  loadTemplate(tmpl);
-                  setActiveMobilePanel(null);
-                }}
-                onAddText={(type) => {
-                  handleAddText(type);
-                  setActiveMobilePanel(null);
-                }}
-                onAddShape={(shape, fill) => {
-                  handleAddShape(shape, fill);
-                  setActiveMobilePanel(null);
-                }}
-                onAddClipart={(item) => {
-                  handleAddClipart(item);
-                  setActiveMobilePanel(null);
-                }}
-                onUploadImageFile={(file) => {
-                  handleUploadImageFile(file);
-                  setActiveMobilePanel(null);
-                }}
-                isProcessingUpload={isProcessingUpload}
-                stickerPack={stickerPack}
-                activePackIndex={activePackIndex}
-                onSelectPackIndex={setActivePackIndex}
-                onAddPackItem={() => {
-                  const newId = `stk-${stickerPack.length + 1}`;
-                  setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
-                  setActivePackIndex(stickerPack.length);
-                }}
-                onCloseMobile={() => setActiveMobilePanel(null)}
-              />
+          <div className="fixed inset-x-0 bottom-0 z-50 md:hidden bg-neutral-900/20 backdrop-blur-[1px] flex justify-center animate-in fade-in duration-150">
+            <div className="w-full max-w-md bg-white rounded-t-[28px] max-h-[78vh] h-[78vh] flex flex-col overflow-hidden shadow-[0_-10px_30px_rgba(15,23,42,0.18)] border-t border-neutral-200">
+              <div className="flex items-center justify-center border-b border-neutral-100 px-4 py-2">
+                <div className="h-1.5 w-12 rounded-full bg-neutral-300" />
+              </div>
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <TemplateSidebar
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  borderWidth={borderWidth}
+                  onBorderWidthChange={setBorderWidth}
+                  borderColor={borderColor}
+                  onBorderColorChange={setBorderColor}
+                  hasShadow={hasShadow}
+                  onHasShadowToggle={() => setHasShadow(!hasShadow)}
+                  previewBg={previewBg}
+                  onPreviewBgChange={setPreviewBg}
+                  onSelectTemplate={(tmpl) => {
+                    loadTemplate(tmpl);
+                    setActiveMobilePanel(null);
+                  }}
+                  onAddText={(type) => {
+                    handleAddText(type);
+                    setActiveMobilePanel(null);
+                  }}
+                  onAddShape={(shape, fill) => {
+                    handleAddShape(shape, fill);
+                    setActiveMobilePanel(null);
+                  }}
+                  onAddClipart={(item) => {
+                    handleAddClipart(item);
+                    setActiveMobilePanel(null);
+                  }}
+                  onUploadImageFile={(file) => {
+                    handleUploadImageFile(file);
+                    setActiveMobilePanel(null);
+                  }}
+                  isProcessingUpload={isProcessingUpload}
+                  stickerPack={stickerPack}
+                  activePackIndex={activePackIndex}
+                  onSelectPackIndex={setActivePackIndex}
+                  onAddPackItem={() => {
+                    const newId = `stk-${stickerPack.length + 1}`;
+                    setStickerPack([...stickerPack, { id: newId, name: `Sticker ${stickerPack.length + 1}` }]);
+                    setActivePackIndex(stickerPack.length);
+                  }}
+                  onCloseMobile={() => setActiveMobilePanel(null)}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -1534,9 +1528,9 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
         <main 
           ref={canvasContainerRef}
           aria-label="Sticker Canvas Viewport"
-          className="flex-1 flex flex-col items-center justify-center relative z-10 overflow-hidden px-2 pb-[calc(env(safe-area-inset-bottom)+64px)] pt-2 sm:px-4 sm:pb-4 md:px-8 md:pb-0 md:pt-8"
+          className="flex-1 flex min-h-0 flex-col items-center justify-center relative z-10 overflow-hidden px-1 pt-0 pb-2 sm:px-4 sm:pt-2 sm:pb-3 md:px-8 md:pb-0 md:pt-8"
           style={{
-            minHeight: isMobile ? 'calc(100dvh - 58px - 72px)' : undefined,
+            minHeight: isMobile ? 'calc(100dvh - 52px - 30px)' : undefined,
           }}
         >
           {/* Floating Contextual Toolbar near selected element */}
@@ -1576,7 +1570,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
             }`}
             style={{
               overflow: 'hidden',
-              minHeight: isMobile ? '320px' : 'auto',
+              minHeight: isMobile ? 'min(38vh, 280px)' : 'auto',
             }}
           >
             <canvas
@@ -1737,10 +1731,10 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
       {/* MOBILE BOTTOM TOOLBAR DOCK */}
       <div
-        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-2 flex items-center justify-around shadow-lg"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 flex items-center justify-around shadow-lg"
         style={{
-          paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom))',
-          height: 'calc(3.5rem + env(safe-area-inset-bottom))',
+          paddingBottom: 'calc(0.25rem + env(safe-area-inset-bottom))',
+          height: 'calc(3.25rem + env(safe-area-inset-bottom))',
         }}
       >
         <button
