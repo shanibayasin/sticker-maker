@@ -149,6 +149,11 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   const isTransformingRef = useRef<boolean>(false);
   const startMousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const startElemStateRef = useRef<CanvasElement | null>(null);
+  const historyIndexRef = useRef<number>(historyIndex);
+
+  useEffect(() => {
+    historyIndexRef.current = historyIndex;
+  }, [historyIndex]);
 
   // Safe Element Serialization (strips non-cloneable DOM nodes)
   const serializeElements = useCallback((elems: CanvasElement[]): CanvasElement[] => {
@@ -188,7 +193,8 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     const cleanSnapshot = serializeElements(newElements);
 
     setHistory((prev) => {
-      const updated = prev.slice(0, Math.min(historyIndex + 1, prev.length));
+      const nextIndex = Math.min(historyIndexRef.current + 1, 29);
+      const updated = prev.slice(0, Math.min(nextIndex, prev.length));
       updated.push(cleanSnapshot);
       if (updated.length > 30) updated.shift();
       return updated;
@@ -210,7 +216,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     } catch {
       // Ignore quota errors
     }
-  }, [historyIndex, serializeElements, borderWidth, borderColor, hasShadow, canvasSize]);
+  }, [serializeElements, borderWidth, borderColor, hasShadow, canvasSize]);
 
   // Undo / Redo
   const handleUndo = useCallback(() => {
@@ -386,6 +392,17 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
     pushHistory(hydrated);
   }, [deserializeElements, pushHistory]);
 
+  useEffect(() => {
+    if (!selectedId && elements.length > 0) {
+      setSelectedId(elements[0].id);
+      return;
+    }
+
+    if (selectedId && !elements.some((el) => el.id === selectedId)) {
+      setSelectedId(elements[elements.length - 1]?.id ?? null);
+    }
+  }, [elements, selectedId]);
+
   // Initial Boot: Check URL query / localStorage / default template
   useEffect(() => {
     if (loadProcessedPhotoFromSession()) {
@@ -428,7 +445,7 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
       // Default to first template
       loadTemplate(STICKER_TEMPLATES[0]);
     }
-  }, [initialCategory, initialTemplateId, loadTemplate, deserializeElements, loadProcessedPhotoFromSession]);
+  }, [initialCategory, initialTemplateId]);
 
   const handleMobileSheetDragStart = (clientY: number) => {
     mobileSheetDragRef.current = { startY: clientY, startHeight: mobileSheetHeight };
@@ -766,52 +783,78 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
   }, [elements, selectedId, borderWidth, borderColor, hasShadow, canvasSize]);
 
   // Handle Canvas Mouse & Touch Interaction (Selection, Drag, Resize, Rotate)
-  const getCanvasCoords = (clientX: number, clientY: number) => {
+  const getCanvasCoords = useCallback((clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
+
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    const width = Math.max(rect.width, 1);
+    const height = Math.max(rect.height, 1);
+    const scaleX = canvas.width / width;
+    const scaleY = canvas.height / height;
+
     return {
       x: (clientX - rect.left) * scaleX,
       y: (clientY - rect.top) * scaleY,
     };
-  };
+  }, []);
 
-  const getHandleUnderPoint = (elem: CanvasElement, pt: { x: number; y: number }): TransformHandle => {
-    // Transform point into element's local coordinate space
+  const getLocalPoint = useCallback((elem: CanvasElement, pt: { x: number; y: number }) => {
     const rad = -((elem.angle || 0) * Math.PI) / 180;
     const dx = pt.x - elem.x;
     const dy = pt.y - elem.y;
-    const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
-    const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
 
+    return {
+      x: dx * Math.cos(rad) - dy * Math.sin(rad),
+      y: dx * Math.sin(rad) + dy * Math.cos(rad),
+    };
+  }, []);
+
+  const getSelectionMetrics = useCallback((elem: CanvasElement) => {
     const hw = elem.width / 2;
     const hh = elem.height / 2;
     const pad = 6;
     const hitRadius = 12;
 
-    // Check Rotate handle
-    const rotDist = Math.hypot(localX - 0, localY - (-hh - pad - 20));
+    return {
+      hw,
+      hh,
+      pad,
+      hitRadius,
+      handles: [
+        { key: 'nw' as const, x: -hw - pad, y: -hh - pad },
+        { key: 'n' as const, x: 0, y: -hh - pad },
+        { key: 'ne' as const, x: hw + pad, y: -hh - pad },
+        { key: 'e' as const, x: hw + pad, y: 0 },
+        { key: 'se' as const, x: hw + pad, y: hh + pad },
+        { key: 's' as const, x: 0, y: hh + pad },
+        { key: 'sw' as const, x: -hw - pad, y: hh + pad },
+        { key: 'w' as const, x: -hw - pad, y: 0 },
+      ],
+    };
+  }, []);
+
+  const getHandleUnderPoint = useCallback((elem: CanvasElement, pt: { x: number; y: number }): TransformHandle => {
+    const { hw, hh, pad, hitRadius, handles } = getSelectionMetrics(elem);
+    const local = getLocalPoint(elem, pt);
+
+    // Check rotate handle
+    const rotDist = Math.hypot(local.x, local.y + hh + pad + 20);
     if (rotDist <= hitRadius) return 'rot';
 
-    // Check 8 Resize handles
-    if (Math.hypot(localX - (-hw - pad), localY - (-hh - pad)) <= hitRadius) return 'nw';
-    if (Math.hypot(localX - (hw + pad), localY - (-hh - pad)) <= hitRadius) return 'ne';
-    if (Math.hypot(localX - (hw + pad), localY - (hh + pad)) <= hitRadius) return 'se';
-    if (Math.hypot(localX - (-hw - pad), localY - (hh + pad)) <= hitRadius) return 'sw';
-    if (Math.hypot(localX - 0, localY - (-hh - pad)) <= hitRadius) return 'n';
-    if (Math.hypot(localX - (hw + pad), localY - 0) <= hitRadius) return 'e';
-    if (Math.hypot(localX - 0, localY - (hh + pad)) <= hitRadius) return 's';
-    if (Math.hypot(localX - (-hw - pad), localY - 0) <= hitRadius) return 'w';
+    // Check 8 resize handles
+    for (const handle of handles) {
+      const dist = Math.hypot(local.x - handle.x, local.y - handle.y);
+      if (dist <= hitRadius) return handle.key;
+    }
 
-    // Check Element Body
-    if (localX >= -hw && localX <= hw && localY >= -hh && localY <= hh) {
+    // Check element body
+    if (local.x >= -hw && local.x <= hw && local.y >= -hh && local.y <= hh) {
       return 'body';
     }
 
     return null;
-  };
+  }, [getLocalPoint, getSelectionMetrics]);
 
   const handlePointerDown = (clientX: number, clientY: number) => {
     const pt = getCanvasCoords(clientX, clientY);

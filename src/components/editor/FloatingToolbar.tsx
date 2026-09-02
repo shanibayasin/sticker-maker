@@ -122,7 +122,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   return (
     <div
-      className="fixed z-40 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
+      className="fixed z-[80] bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
       style={{
         top: `${topPos}px`,
         left: `${leftPos}px`,
@@ -239,7 +239,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
           {showShapePicker && (
             <div
-              className="absolute bottom-full left-1/2 z-50 mb-2 w-40 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in"
+              className="absolute bottom-full left-1/2 z-[100] mb-2 w-40 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-1.5 animate-in fade-in"
               style={{ maxWidth: isMobile ? 'calc(100vw - 52px)' : undefined }}
             >
               <div className="grid grid-cols-2 gap-1">
@@ -279,7 +279,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
         {showColorPicker && (
           <div
-            className="absolute bottom-full left-1/2 z-50 mb-2 w-44 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in"
+            className="absolute bottom-full left-1/2 z-[100] mb-2 w-44 max-h-[220px] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-xl border border-neutral-200 bg-white/95 shadow-xl p-2.5 animate-in fade-in"
             style={{ maxWidth: isMobile ? 'calc(100vw - 50px)' : undefined }}
           >
             <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-neutral-500">Fill Color</span>
@@ -340,7 +340,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
         {showRotateMenu && (
           <div
-            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-2 w-40 z-50 animate-in fade-in space-y-1`}
+            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-2 w-40 z-[100] animate-in fade-in space-y-1`}
             style={{ maxWidth: isMobile ? 'calc(100vw - 40px)' : undefined }}
           >
             <button
@@ -425,7 +425,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
         {showLayerMenu && (
           <div
-            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-1.5 w-36 z-50 animate-in fade-in space-y-0.5`}
+            className={`absolute ${isMobile ? 'bottom-full left-1/2 -translate-x-1/2 mb-2' : 'top-full left-0 mt-2'} bg-white rounded-xl shadow-xl border border-neutral-200 p-1.5 w-36 z-[100] animate-in fade-in space-y-0.5`}
             style={{ maxWidth: isMobile ? 'calc(100vw - 40px)' : undefined }}
           >
             <button
