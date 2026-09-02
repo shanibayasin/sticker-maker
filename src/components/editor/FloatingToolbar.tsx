@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   Bold, 
   Italic, 
@@ -47,6 +47,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const [showShapePicker, setShowShapePicker] = useState(false);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [showRotateMenu, setShowRotateMenu] = useState(false);
+  const mobileToolbarScrollRef = useRef<HTMLDivElement | null>(null);
 
   const toggleShapePicker = () => {
     setShowShapePicker((current) => {
@@ -69,8 +70,8 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 720;
   const isMobile = viewportWidth < 768;
-  const toolbarWidth = isMobile ? 168 : 220;
-  const toolbarHeight = isMobile ? 36 : 48;
+  const toolbarWidth = isMobile ? Math.min(viewportWidth - 16, 340) : 220;
+  const toolbarHeight = isMobile ? 42 : 48;
   const gap = isMobile ? 8 : 10;
 
   const scaleY = canvasBounds.height / Math.max(canvasSize.height, 1);
@@ -121,14 +122,29 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
 
   return (
     <div
-      className="fixed z-40 flex items-center gap-1 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
+      className="fixed z-40 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-neutral-200 text-neutral-700 text-xs animate-in fade-in zoom-in-95 duration-100 select-none"
       style={{
         top: `${topPos}px`,
         left: `${leftPos}px`,
+        width: isMobile ? `${toolbarWidth}px` : undefined,
         maxWidth: isMobile ? 'calc(100vw - 16px)' : undefined,
-        overflow: 'hidden',
+        overflowX: isMobile ? 'auto' : 'visible',
+        overflowY: 'visible',
+        overscrollBehaviorX: 'contain',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
+        touchAction: isMobile ? 'pan-x' : 'auto',
       }}
     >
+      <div
+        ref={mobileToolbarScrollRef}
+        className="mobile-toolbar-scroll flex items-center gap-1 flex-nowrap"
+        style={{
+          width: isMobile ? 'max-content' : 'auto',
+          minWidth: isMobile ? '100%' : undefined,
+          whiteSpace: 'nowrap',
+        }}
+      >
       {/* 1. TEXT CONTROLS */}
       {element.type === 'text' && (
         <>
@@ -469,6 +485,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
+      </div>
       </div>
     </div>
   );

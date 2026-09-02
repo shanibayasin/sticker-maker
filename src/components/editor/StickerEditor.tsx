@@ -1731,113 +1731,118 @@ export const StickerEditor: React.FC<StickerEditorProps> = ({
 
       {/* MOBILE BOTTOM TOOLBAR DOCK */}
       <div
-        className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-neutral-200 px-2 py-1.5 flex items-center justify-around shadow-lg"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-30 overflow-x-auto overflow-y-hidden bg-white border-t border-neutral-200 px-2 py-1.5 shadow-lg no-scrollbar mobile-toolbar-scroll"
         style={{
           paddingBottom: 'calc(0.25rem + env(safe-area-inset-bottom))',
           height: 'calc(3.25rem + env(safe-area-inset-bottom))',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
+          touchAction: 'pan-x',
         }}
       >
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'dieCut';
-            setActiveTab('border');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'dieCut' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Scissors className="w-4 h-4" />
-          <span className="text-[10px]">Die-Cut</span>
-        </button>
+        <div className="flex w-max min-w-full items-center justify-between gap-1">
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'dieCut';
+              setActiveTab('border');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'dieCut' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <Scissors className="w-4 h-4" />
+            <span className="text-[10px]">Die-Cut</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'templates';
-            setActiveTab('templates');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'templates' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span className="text-[10px]">Templates</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'templates';
+              setActiveTab('templates');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'templates' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="text-[10px]">Templates</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'text';
-            setActiveTab('text');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'text' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Type className="w-4 h-4" />
-          <span className="text-[10px]">Text</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'text';
+              setActiveTab('text');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'text' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <Type className="w-4 h-4" />
+            <span className="text-[10px]">Text</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'uploads';
-            setActiveTab('uploads');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'uploads' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <ImageIcon className="w-4 h-4" />
-          <span className="text-[10px]">Upload</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'uploads';
+              setActiveTab('uploads');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'uploads' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span className="text-[10px]">Upload</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'clipart';
-            setActiveTab('elements');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'clipart' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Shapes className="w-4 h-4" />
-          <span className="text-[10px]">Clipart</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'clipart';
+              setActiveTab('elements');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'clipart' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <Shapes className="w-4 h-4" />
+            <span className="text-[10px]">Clipart</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'pack';
-            setActiveTab('pack');
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
-            activeMobilePanel === 'pack' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <Package className="w-4 h-4" />
-          <span className="text-[10px]">Pack</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'pack';
+              setActiveTab('pack');
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center transition-colors ${
+              activeMobilePanel === 'pack' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <Package className="w-4 h-4" />
+            <span className="text-[10px]">Pack</span>
+          </button>
 
-        <button
-          onClick={() => {
-            const nextPanel: Exclude<MobilePanel, null> = 'inspect';
-            setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
-          }}
-          className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center relative transition-colors ${
-            activeMobilePanel === 'inspect' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
-          }`}
-        >
-          <div className="relative">
-            <Layers className="w-4 h-4" />
-            {selectedElement && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
-            )}
-          </div>
-          <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
-        </button>
+          <button
+            onClick={() => {
+              const nextPanel: Exclude<MobilePanel, null> = 'inspect';
+              setActiveMobilePanel((current) => current === nextPanel ? null : nextPanel);
+            }}
+            className={`flex flex-col items-center gap-0.5 p-1.5 rounded-xl min-w-12.5 min-h-11 justify-center relative transition-colors ${
+              activeMobilePanel === 'inspect' ? 'text-rose-600 font-bold bg-rose-50' : 'text-neutral-600'
+            }`}
+          >
+            <div className="relative">
+              <Layers className="w-4 h-4" />
+              {selectedElement && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              )}
+            </div>
+            <span className="text-[10px]">{selectedElement ? 'Inspect' : 'Layers'}</span>
+          </button>
+        </div>
       </div>
 
       {/* 3. BACKGROUND REMOVAL BEFORE/AFTER MODAL */}

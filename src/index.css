@@ -75,6 +75,20 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .mobile-toolbar-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .mobile-toolbar-scroll::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .font-fredoka {
