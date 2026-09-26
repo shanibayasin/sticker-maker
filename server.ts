@@ -2,9 +2,9 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 
-async function startServer() {
+async function startServer(port: number = Number(process.env.PORT || 3000)) {
   const app = express();
-  const PORT = Number(process.env.PORT || 3000);
+  const HOST = process.env.HOST || 'localhost';
 
   if (process.env.VERCEL) {
     return;
@@ -122,8 +122,19 @@ Sitemap: https://sticker-maker-online.vercel.app/sitemap.xml
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Sticker Maker server active on http://0.0.0.0:${PORT}`);
+  const server = app.listen(port, HOST, () => {
+    console.log(`Sticker Maker server active on http://${HOST}:${port}`);
+  });
+
+  server.on('error', (error: NodeJS.ErrnoException) => {
+    if (error.code === 'EADDRINUSE') {
+      const nextPort = port + 1;
+      console.warn(`Port ${port} is already in use. Trying ${nextPort} instead...`);
+      startServer(nextPort);
+      return;
+    }
+
+    throw error;
   });
 }
 

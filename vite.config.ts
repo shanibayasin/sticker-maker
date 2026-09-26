@@ -16,12 +16,14 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: '0.0.0.0',
+      host: process.env.HOST || 'localhost',
+      port: Number(process.env.PORT || 3000),
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     preview: {
-      host: '0.0.0.0',
+      host: process.env.HOST || 'localhost',
+      port: Number(process.env.PORT || 4173),
     },
     build: {
       chunkSizeWarningLimit: 1500,

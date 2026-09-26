@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "dev:vite": "vite --host 0.0.0.0",
+    "dev:vite": "vite --host localhost",
     "build": "vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "start": "vite preview --host 0.0.0.0",
-    "preview": "vite preview --host 0.0.0.0",
+    "start": "vite preview --host localhost",
+    "preview": "vite preview --host localhost",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
